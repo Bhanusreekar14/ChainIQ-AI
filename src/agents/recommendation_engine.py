@@ -15,6 +15,16 @@ from src.models.predict_delay import predict_delay
 
 
 # -----------------------------
+# Config Paths
+# -----------------------------
+IMPACT_RULES_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    "config",
+    "impact_rules.json"
+)
+
+
+# -----------------------------
 # Constants
 # -----------------------------
 PRIORITY_MAP = {
@@ -22,6 +32,74 @@ PRIORITY_MAP = {
     "Medium": "Medium",
     "High": "High",
     "Critical": "Urgent"
+}
+
+ROOT_CAUSE_RULES = [
+    {
+        "name": "Standard Shipping",
+        "condition": lambda o: o.get("Shipping Mode") == "Standard Class"
+    },
+    {
+        "name": "High Risk Region",
+        "condition": lambda o: o.get("Market") in ["LATAM", "Africa"]
+    },
+    {
+        "name": "Large Shipment Volume",
+        "condition": lambda o: o.get("Order Item Quantity", 0) > 5
+    },
+    {
+        "name": "Long Delivery Window",
+        "condition": lambda o: o.get("Days for shipment (scheduled)", 0) > 4
+    },
+    {
+        "name": "High Value Shipment",
+        "condition": lambda o: o.get("Sales", 0) > 1000
+    },
+    {
+        "name": "Low Profit Margin",
+        "condition": lambda o: o.get("profit_margin", 1) < 0.10
+    },
+    {
+        "name": "Weekend Order",
+        "condition": lambda o: o.get("order_is_weekend", 0) == 1
+    },
+    {
+        "name": "High Discount Rate",
+        "condition": lambda o: o.get("discount_rate", 0) > 0.20
+    }
+]
+
+ACTION_MAP = {
+    "Standard Shipping": [
+        {"action": "Upgrade to Express Shipping", "priority": "High"},
+        {"action": "Review shipping SLA", "priority": "Medium"}
+    ],
+    "High Risk Region": [
+        {"action": "Notify Regional Manager", "priority": "High"},
+        {"action": "Increase shipment monitoring", "priority": "Medium"}
+    ],
+    "Large Shipment Volume": [
+        {"action": "Allocate additional warehouse staff", "priority": "Medium"},
+        {"action": "Split shipment into smaller batches", "priority": "Low"}
+    ],
+    "Long Delivery Window": [
+        {"action": "Expedite processing at origin warehouse", "priority": "Medium"}
+    ],
+    "High Value Shipment": [
+        {"action": "Enable priority handling", "priority": "High"},
+        {"action": "Assign dedicated logistics coordinator", "priority": "Medium"}
+    ],
+    "Low Profit Margin": [
+        {"action": "Review pricing strategy", "priority": "Medium"},
+        {"action": "Reduce operational costs", "priority": "Low"}
+    ],
+    "Weekend Order": [
+        {"action": "Verify warehouse staffing", "priority": "Medium"},
+        {"action": "Schedule early dispatch", "priority": "Low"}
+    ],
+    "High Discount Rate": [
+        {"action": "Review order profitability", "priority": "Low"}
+    ]
 }
 
 
@@ -38,28 +116,63 @@ def analyze_root_causes(order_data: dict) -> list:
     Returns:
         list: List of identified root cause strings.
     """
-    # TODO: Implement root cause analysis rules
     causes = []
+
+    for rule in ROOT_CAUSE_RULES:
+        try:
+            if rule["condition"](order_data):
+                causes.append(rule["name"])
+        except (KeyError, TypeError):
+            continue
+
     return causes
 
 
 # -----------------------------
 # Module 2: Recommendation Generator
 # -----------------------------
-def generate_actions(risk_level: str, causes: list, order_data: dict) -> list:
+def generate_actions(causes: list, prediction: dict) -> list:
     """
-    Generate actionable recommendations based on risk and causes.
+    Generate actionable recommendations based on detected
+    root causes and prediction results.
 
     Args:
-        risk_level (str): Predicted risk level.
         causes (list): Identified root causes.
-        order_data (dict): Order details.
+        prediction (dict): Prediction result from predict_delay().
 
     Returns:
-        list: List of recommendation strings.
+        list: List of recommendation dicts with action and priority.
     """
-    # TODO: Implement recommendation generation rules
     recommendations = []
+    seen_actions = set()
+
+    # Step 1: Map root causes to recommendations
+    for cause in causes:
+        if cause in ACTION_MAP:
+            for rec in ACTION_MAP[cause]:
+                if rec["action"] not in seen_actions:
+                    recommendations.append(rec)
+                    seen_actions.add(rec["action"])
+
+    # Step 2: Escalation rules based on risk level
+    risk_level = prediction.get("risk_level", "Low")
+
+    if risk_level == "Critical":
+        escalations = [
+            {"action": "Notify Supply Chain Head", "priority": "Urgent"},
+            {"action": "Prepare customer communication", "priority": "High"}
+        ]
+        for esc in escalations:
+            if esc["action"] not in seen_actions:
+                recommendations.append(esc)
+                seen_actions.add(esc["action"])
+
+    elif risk_level == "High":
+        esc = {"action": "Notify Warehouse Manager", "priority": "High"}
+        if esc["action"] not in seen_actions:
+            recommendations.append(esc)
+            seen_actions.add(esc["action"])
+
     return recommendations
 
 
@@ -82,19 +195,54 @@ def assign_priority(risk_level: str) -> str:
 # -----------------------------
 # Module 4: Business Impact Estimator
 # -----------------------------
-def estimate_business_impact(order_data: dict, risk_level: str) -> dict:
+OPERATIONAL_PRIORITY_MAP = {
+    "Low": "Routine",
+    "Medium": "Normal",
+    "High": "Urgent",
+    "Critical": "Immediate"
+}
+
+
+def load_impact_rules() -> dict:
+    """Load impact estimation rules from config file."""
+    with open(IMPACT_RULES_PATH, "r") as f:
+        return json.load(f)
+
+
+def estimate_business_impact(
+    prediction: dict,
+    recommendations: list
+) -> dict:
     """
-    Estimate the business impact of a potential delay.
+    Estimate the business impact of applying the recommendations.
 
     Args:
-        order_data (dict): Order details.
-        risk_level (str): Predicted risk level.
+        prediction (dict): Prediction result from predict_delay().
+        recommendations (list): List of recommendation dicts.
 
     Returns:
         dict: Business impact estimates.
     """
-    # TODO: Implement business impact estimation
-    return {}
+    impact_rules = load_impact_rules()
+    risk_level = prediction.get("risk_level", "Low")
+
+    total_delay_reduction = 0.0
+    total_cost_saving = 0
+
+    for rec in recommendations:
+        action_name = rec.get("action", "")
+        if action_name in impact_rules:
+            rule = impact_rules[action_name]
+            total_delay_reduction += rule.get("delay_reduction_days", 0)
+            total_cost_saving += rule.get("cost_saving_usd", 0)
+
+    return {
+        "estimated_delay_reduction_days": round(total_delay_reduction, 1),
+        "estimated_cost_saving_usd": total_cost_saving,
+        "customer_risk": risk_level,
+        "operational_priority": OPERATIONAL_PRIORITY_MAP.get(risk_level, "Normal"),
+        "recommendations_count": len(recommendations)
+    }
 
 
 # -----------------------------
@@ -118,15 +266,13 @@ def generate_recommendation(order_data: dict) -> dict:
     causes = analyze_root_causes(order_data)
 
     # Step 3: Generate recommendations
-    recommendations = generate_actions(
-        prediction["risk_level"], causes, order_data
-    )
+    recommendations = generate_actions(causes, prediction)
 
     # Step 4: Assign priority
     priority = assign_priority(prediction["risk_level"])
 
     # Step 5: Estimate business impact
-    impact = estimate_business_impact(order_data, prediction["risk_level"])
+    impact = estimate_business_impact(prediction, recommendations)
 
     # Step 6: Return complete recommendation
     return {

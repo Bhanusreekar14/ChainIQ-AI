@@ -1,0 +1,70 @@
+{
+    "Upgrade to Express Shipping": {
+        "delay_reduction_days": 2.0,
+        "cost_saving_usd": 150
+    },
+    "Review shipping SLA": {
+        "delay_reduction_days": 1.0,
+        "cost_saving_usd": 50
+    },
+    "Notify Regional Manager": {
+        "delay_reduction_days": 0.5,
+        "cost_saving_usd": 30
+    },
+    "Increase shipment monitoring": {
+        "delay_reduction_days": 0.5,
+        "cost_saving_usd": 20
+    },
+    "Allocate additional warehouse staff": {
+        "delay_reduction_days": 1.0,
+        "cost_saving_usd": 80
+    },
+    "Split shipment into smaller batches": {
+        "delay_reduction_days": 0.5,
+        "cost_saving_usd": 40
+    },
+    "Expedite processing at origin warehouse": {
+        "delay_reduction_days": 1.0,
+        "cost_saving_usd": 60
+    },
+    "Enable priority handling": {
+        "delay_reduction_days": 1.5,
+        "cost_saving_usd": 120
+    },
+    "Assign dedicated logistics coordinator": {
+        "delay_reduction_days": 1.0,
+        "cost_saving_usd": 100
+    },
+    "Review pricing strategy": {
+        "delay_reduction_days": 0,
+        "cost_saving_usd": 200
+    },
+    "Reduce operational costs": {
+        "delay_reduction_days": 0,
+        "cost_saving_usd": 150
+    },
+    "Verify warehouse staffing": {
+        "delay_reduction_days": 0.5,
+        "cost_saving_usd": 30
+    },
+    "Schedule early dispatch": {
+        "delay_reduction_days": 1.0,
+        "cost_saving_usd": 40
+    },
+    "Review order profitability": {
+        "delay_reduction_days": 0,
+        "cost_saving_usd": 50
+    },
+    "Notify Supply Chain Head": {
+        "delay_reduction_days": 1.0,
+        "cost_saving_usd": 200
+    },
+    "Prepare customer communication": {
+        "delay_reduction_days": 0,
+        "cost_saving_usd": 0
+    },
+    "Notify Warehouse Manager": {
+        "delay_reduction_days": 0.5,
+        "cost_saving_usd": 50
+    }
+}
