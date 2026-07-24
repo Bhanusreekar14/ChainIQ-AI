@@ -47,3 +47,7 @@ env/
 data/raw/*.csv
 data/processed/*.csv
 data/synthetic/*.csv
+
+# CatBoost
+catboost_info/
+
