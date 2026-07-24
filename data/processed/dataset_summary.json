@@ -1,0 +1,275 @@
+{
+    "dataset_metadata": {
+        "file_path": "data/raw/DataCoSupplyChainDataset.csv",
+        "total_rows": 180519,
+        "total_columns": 53,
+        "duplicate_rows": 0
+    },
+    "columns": {
+        "all_columns": [
+            "Type",
+            "Days for shipping (real)",
+            "Days for shipment (scheduled)",
+            "Benefit per order",
+            "Sales per customer",
+            "Delivery Status",
+            "Late_delivery_risk",
+            "Category Id",
+            "Category Name",
+            "Customer City",
+            "Customer Country",
+            "Customer Email",
+            "Customer Fname",
+            "Customer Id",
+            "Customer Lname",
+            "Customer Password",
+            "Customer Segment",
+            "Customer State",
+            "Customer Street",
+            "Customer Zipcode",
+            "Department Id",
+            "Department Name",
+            "Latitude",
+            "Longitude",
+            "Market",
+            "Order City",
+            "Order Country",
+            "Order Customer Id",
+            "order date (DateOrders)",
+            "Order Id",
+            "Order Item Cardprod Id",
+            "Order Item Discount",
+            "Order Item Discount Rate",
+            "Order Item Id",
+            "Order Item Product Price",
+            "Order Item Profit Ratio",
+            "Order Item Quantity",
+            "Sales",
+            "Order Item Total",
+            "Order Profit Per Order",
+            "Order Region",
+            "Order State",
+            "Order Status",
+            "Order Zipcode",
+            "Product Card Id",
+            "Product Category Id",
+            "Product Description",
+            "Product Image",
+            "Product Name",
+            "Product Price",
+            "Product Status",
+            "shipping date (DateOrders)",
+            "Shipping Mode"
+        ],
+        "dtypes": {
+            "Type": "str",
+            "Days for shipping (real)": "int64",
+            "Days for shipment (scheduled)": "int64",
+            "Benefit per order": "float64",
+            "Sales per customer": "float64",
+            "Delivery Status": "str",
+            "Late_delivery_risk": "int64",
+            "Category Id": "int64",
+            "Category Name": "str",
+            "Customer City": "str",
+            "Customer Country": "str",
+            "Customer Email": "str",
+            "Customer Fname": "str",
+            "Customer Id": "int64",
+            "Customer Lname": "str",
+            "Customer Password": "str",
+            "Customer Segment": "str",
+            "Customer State": "str",
+            "Customer Street": "str",
+            "Customer Zipcode": "float64",
+            "Department Id": "int64",
+            "Department Name": "str",
+            "Latitude": "float64",
+            "Longitude": "float64",
+            "Market": "str",
+            "Order City": "str",
+            "Order Country": "str",
+            "Order Customer Id": "int64",
+            "order date (DateOrders)": "str",
+            "Order Id": "int64",
+            "Order Item Cardprod Id": "int64",
+            "Order Item Discount": "float64",
+            "Order Item Discount Rate": "float64",
+            "Order Item Id": "int64",
+            "Order Item Product Price": "float64",
+            "Order Item Profit Ratio": "float64",
+            "Order Item Quantity": "int64",
+            "Sales": "float64",
+            "Order Item Total": "float64",
+            "Order Profit Per Order": "float64",
+            "Order Region": "str",
+            "Order State": "str",
+            "Order Status": "str",
+            "Order Zipcode": "float64",
+            "Product Card Id": "int64",
+            "Product Category Id": "int64",
+            "Product Description": "float64",
+            "Product Image": "str",
+            "Product Name": "str",
+            "Product Price": "float64",
+            "Product Status": "int64",
+            "shipping date (DateOrders)": "str",
+            "Shipping Mode": "str"
+        }
+    },
+    "missing_values": {
+        "Customer Lname": {
+            "count": 8,
+            "percentage": 0.0044316664727812585
+        },
+        "Customer Zipcode": {
+            "count": 3,
+            "percentage": 0.001661874927292972
+        },
+        "Order Zipcode": {
+            "count": 155679,
+            "percentage": 86.23967560201419
+        },
+        "Product Description": {
+            "count": 180519,
+            "percentage": 100.0
+        }
+    },
+    "target_distribution": {
+        "1": 98977,
+        "0": 81542
+    },
+    "unique_values_key_columns": {
+        "Delivery Status": [
+            "Advance shipping",
+            "Late delivery",
+            "Shipping on time",
+            "Shipping canceled"
+        ],
+        "Shipping Mode": [
+            "Standard Class",
+            "First Class",
+            "Second Class",
+            "Same Day"
+        ],
+        "Market": [
+            "Pacific Asia",
+            "USCA",
+            "Africa",
+            "Europe",
+            "LATAM"
+        ]
+    },
+    "feature_analyses": {
+        "numerical": {
+            "Days for shipping (real)": {
+                "mean": 3.4976539865609713,
+                "std": 1.6237218283741632,
+                "min": 0.0,
+                "25%": 2.0,
+                "50%": 3.0,
+                "75%": 5.0,
+                "max": 6.0
+            },
+            "Days for shipment (scheduled)": {
+                "mean": 2.931846509231715,
+                "std": 1.374449280007978,
+                "min": 0.0,
+                "25%": 2.0,
+                "50%": 4.0,
+                "75%": 4.0,
+                "max": 4.0
+            },
+            "Order Item Quantity": {
+                "mean": 2.127637533999191,
+                "std": 1.453451481422641,
+                "min": 1.0,
+                "25%": 1.0,
+                "50%": 1.0,
+                "75%": 3.0,
+                "max": 5.0
+            },
+            "Sales": {
+                "mean": 203.77209608617287,
+                "std": 132.27307749970333,
+                "min": 9.989999771,
+                "25%": 119.9800034,
+                "50%": 199.9199982,
+                "75%": 299.9500122,
+                "max": 1999.98999
+            },
+            "Order Item Total": {
+                "mean": 183.10760850778374,
+                "std": 120.04367002812562,
+                "min": 7.489999771,
+                "25%": 104.3799973,
+                "50%": 163.9900055,
+                "75%": 247.3999939,
+                "max": 1939.98999
+            },
+            "Order Profit Per Order": {
+                "mean": 21.974988638594038,
+                "std": 104.4335257469866,
+                "min": -4274.97998,
+                "25%": 7.0,
+                "50%": 31.52000046,
+                "75%": 64.80000305,
+                "max": 911.7999878
+            }
+        },
+        "categorical_discrete": {
+            "Late_delivery_risk": {
+                "1": 98977,
+                "0": 81542
+            },
+            "Delivery Status": {
+                "Late delivery": 98977,
+                "Advance shipping": 41592,
+                "Shipping on time": 32196,
+                "Shipping canceled": 7754
+            },
+            "Shipping Mode": {
+                "Standard Class": 107752,
+                "Second Class": 35216,
+                "First Class": 27814,
+                "Same Day": 9737
+            },
+            "Product Category Id": {
+                "17": 24551,
+                "18": 22246,
+                "24": 21035,
+                "46": 19298,
+                "45": 17325,
+                "48": 15540,
+                "43": 13729,
+                "9": 12487,
+                "29": 10984,
+                "37": 2029
+            },
+            "Order Region": {
+                "Central America": 28341,
+                "Western Europe": 27109,
+                "South America": 14935,
+                "Oceania": 10148,
+                "Northern Europe": 9792,
+                "Southeast Asia": 9539,
+                "Southern Europe": 9431,
+                "Caribbean": 8318,
+                "West of USA ": 7993,
+                "South Asia": 7731
+            }
+        },
+        "temporal": {
+            "order date (DateOrders)": {
+                "min_date": "2015-01-01 00:00:00",
+                "max_date": "2018-01-31 23:38:00",
+                "invalid_dates_count": 0
+            },
+            "shipping date (DateOrders)": {
+                "min_date": "2015-01-03 00:00:00",
+                "max_date": "2018-02-06 22:14:00",
+                "invalid_dates_count": 0
+            }
+        }
+    }
+}

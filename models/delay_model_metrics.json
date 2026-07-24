@@ -1,0 +1,76 @@
+{
+    "accuracy": 0.7120540660314647,
+    "precision": 0.8256714335542379,
+    "recall": 0.599807429179547,
+    "f1": 0.6948456029118234,
+    "roc_auc": 0.7724201639006756,
+    "confusion_matrix": {
+        "tn": 13872,
+        "fp": 2499,
+        "fn": 7897,
+        "tp": 11836
+    },
+    "leakage_warning": false,
+    "top_features": [
+        {
+            "Feature": "Shipping Mode",
+            "Importance": 35.25515551886248
+        },
+        {
+            "Feature": "order_hour",
+            "Importance": 21.203180371027933
+        },
+        {
+            "Feature": "Type",
+            "Importance": 16.50675834740772
+        },
+        {
+            "Feature": "Days for shipment (scheduled)",
+            "Importance": 4.9618220708190295
+        },
+        {
+            "Feature": "Order City",
+            "Importance": 4.742251853689345
+        },
+        {
+            "Feature": "scheduled_shipping_days",
+            "Importance": 4.551499607721537
+        },
+        {
+            "Feature": "Customer City",
+            "Importance": 3.6761212594199786
+        },
+        {
+            "Feature": "Customer State",
+            "Importance": 3.0723082316134014
+        },
+        {
+            "Feature": "Customer Segment",
+            "Importance": 2.2556517947983727
+        },
+        {
+            "Feature": "Market",
+            "Importance": 1.8307170782677016
+        },
+        {
+            "Feature": "Product Price",
+            "Importance": 1.3932308281033268
+        },
+        {
+            "Feature": "Department Name",
+            "Importance": 0.43148538438788125
+        },
+        {
+            "Feature": "Product Name",
+            "Importance": 0.043410224506496245
+        },
+        {
+            "Feature": "order_year",
+            "Importance": 0.03186352909937241
+        },
+        {
+            "Feature": "Order Region",
+            "Importance": 0.02126904882390865
+        }
+    ]
+}
