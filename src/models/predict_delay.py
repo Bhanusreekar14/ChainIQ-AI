@@ -1,76 +1,49 @@
 """
 Inference Engine for ChainIQ.
 Loads the trained CatBoost model and predicts shipment delay probabilities.
+
+Model and feature config are loaded once via src.models.registry and reused
+on every call. This module's public API (predict_delay, classify_risk,
+RISK_LEVELS) is stable; downstream code does not need to change.
 """
 
-import os
 import json
 import pandas as pd
-from catboost import CatBoostClassifier
 
-# -----------------------------
-# Constants
-# -----------------------------
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-
-MODEL_PATH = os.path.join(BASE_DIR, "models", "delay_risk_model.cbm")
-
-FEATURE_CONFIG_PATH = os.path.join(
-    BASE_DIR,
-    "data",
-    "processed",
-    "feature_config.json"
-)
-
-REMOVE_FEATURES = [
-    "Customer Id",
-    "Order Customer Id",
-    "Order Id",
-    "Order Item Id",
-    "Product Card Id",
-    "Product Image",
-    "order date (DateOrders)"
-]
-
-RISK_LEVELS = [
-    (0.30, "Low"),
-    (0.60, "Medium"),
-    (0.80, "High"),
-    (1.00, "Critical")
-]
+from src.core.config import BASE_DIR, FEATURE_CONFIG_PATH, MODEL_PATH
+from src.core.constants import REMOVE_FEATURES, RISK_LEVELS
+from src.core.logging import logger
+from src.models.registry import get_feature_config, get_model
 
 
 # -----------------------------
 # Helper Functions
 # -----------------------------
 def load_model():
-    """Load the trained CatBoost model from disk."""
-    print("Loading trained model...")
-    model = CatBoostClassifier()
-    model.load_model(MODEL_PATH)
-    print("Model loaded successfully.")
+    """
+    Load the trained CatBoost model. Thin wrapper around the registry
+    kept for back-compat with callers that still import this name.
+    """
+    logger.info("Loading trained model via registry...")
+    model = get_model()
+    logger.info("Model loaded successfully.")
     return model
 
 
 def load_feature_config():
-    """Load feature configuration and return cleaned safe features list."""
-    print("Loading feature configuration...")
-    with open(FEATURE_CONFIG_PATH, "r") as f:
-        feature_config = json.load(f)
-
+    """
+    Load feature configuration and return cleaned safe features list.
+    Thin wrapper around the registry kept for back-compat.
+    """
+    logger.info("Loading feature configuration via registry...")
+    feature_config = get_feature_config()
     safe_features = feature_config["SAFE_FEATURES"]
-
-    # Remove ID columns, Product Image, and raw datetime
-    safe_features = [
-        col for col in safe_features
-        if col not in REMOVE_FEATURES
-    ]
-
-    print(f"Loaded {len(safe_features)} safe features (after cleanup).")
+    safe_features = [col for col in safe_features if col not in REMOVE_FEATURES]
+    logger.info(f"Loaded {len(safe_features)} safe features (after cleanup).")
     return safe_features
 
 
-def classify_risk(probability):
+def classify_risk(probability: float) -> str:
     """
     Classify delay probability into risk levels.
 
@@ -89,24 +62,27 @@ def classify_risk(probability):
 # -----------------------------
 # Main Functions
 # -----------------------------
-def predict_delay(order_data: dict):
+def predict_delay(order_data: dict) -> dict:
     """
     Predict shipment delay probability for a single order.
 
     Args:
-        order_data (dict): Order details as key-value pairs.
+        order_data (dict): Order details as key-value pairs. Should contain
+            the model's expected feature names; missing columns will be
+            filled with None (acceptable for CatBoost categoricals but
+            brittle for numerics — prefer the API path through
+            feature_builder for production callers).
 
     Returns:
         dict: Prediction result with delay_probability, risk_level, confidence.
     """
-    # Load model and features
-    model = load_model()
+    model = get_model()
     safe_features = load_feature_config()
 
     # Convert input to DataFrame
     input_df = pd.DataFrame([order_data])
 
-    # Part 1: Keep only safe features that exist in input
+    # Part 1: Fill any missing model features with None
     for feature in safe_features:
         if feature not in input_df.columns:
             input_df[feature] = None
@@ -115,7 +91,6 @@ def predict_delay(order_data: dict):
     input_df = input_df[safe_features]
 
     # Part 3: Predict probability
-    # CatBoost handles categorical features internally (saved in model)
     probability = model.predict_proba(input_df)[0][1]
 
     # Part 4: Classify risk
@@ -125,7 +100,7 @@ def predict_delay(order_data: dict):
     return {
         "delay_probability": round(float(probability), 4),
         "risk_level": risk_level,
-        "confidence": round(float(probability) * 100, 2)
+        "confidence": round(float(probability) * 100, 2),
     }
 
 
@@ -133,7 +108,6 @@ def predict_delay(order_data: dict):
 # Entry Point
 # -----------------------------
 if __name__ == "__main__":
-    # Test with a sample order
     sample_order = {
         "Type": "DEBIT",
         "Category Name": "Fishing",
@@ -179,15 +153,13 @@ if __name__ == "__main__":
         "order_quantity": 2,
         "sales_per_unit": 160.25,
         "discount_rate": 0.04,
-        "profit_margin": 0.22
+        "profit_margin": 0.22,
     }
 
-    print("\n===== INFERENCE ENGINE TEST =====\n")
+    logger.info("Running Inference Engine Standalone Test...")
     result = predict_delay(sample_order)
 
-    print(f"  Delay Probability : {result['delay_probability']}")
-    print(f"  Risk Level        : {result['risk_level']}")
-    print(f"  Confidence        : {result['confidence']}%")
-    print("\nFull Result JSON:")
-    print(json.dumps(result, indent=4))
-
+    logger.info(f"Delay Probability : {result['delay_probability']}")
+    logger.info(f"Risk Level        : {result['risk_level']}")
+    logger.info(f"Confidence        : {result['confidence']}%")
+    logger.info(f"Full Result JSON  :\n{json.dumps(result, indent=4)}")

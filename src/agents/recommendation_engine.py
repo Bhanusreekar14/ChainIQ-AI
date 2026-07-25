@@ -3,104 +3,18 @@ AI Recommendation Engine for ChainIQ.
 Generates decision support recommendations based on shipment delay predictions.
 """
 
-import os
-import sys
 import json
 
-# Add project root to path for imports
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-sys.path.insert(0, BASE_DIR)
-
-from src.models.predict_delay import predict_delay
-
-
-# -----------------------------
-# Config Paths
-# -----------------------------
-IMPACT_RULES_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    "config",
-    "impact_rules.json"
+from src.core.config import IMPACT_RULES_PATH
+from src.core.constants import (
+    ACTION_MAP,
+    OPERATIONAL_PRIORITY_MAP,
+    PRIORITY_MAP,
+    ROOT_CAUSE_RULES,
 )
-
-
-# -----------------------------
-# Constants
-# -----------------------------
-PRIORITY_MAP = {
-    "Low": "Low",
-    "Medium": "Medium",
-    "High": "High",
-    "Critical": "Urgent"
-}
-
-ROOT_CAUSE_RULES = [
-    {
-        "name": "Standard Shipping",
-        "condition": lambda o: o.get("Shipping Mode") == "Standard Class"
-    },
-    {
-        "name": "High Risk Region",
-        "condition": lambda o: o.get("Market") in ["LATAM", "Africa"]
-    },
-    {
-        "name": "Large Shipment Volume",
-        "condition": lambda o: o.get("Order Item Quantity", 0) > 5
-    },
-    {
-        "name": "Long Delivery Window",
-        "condition": lambda o: o.get("Days for shipment (scheduled)", 0) > 4
-    },
-    {
-        "name": "High Value Shipment",
-        "condition": lambda o: o.get("Sales", 0) > 1000
-    },
-    {
-        "name": "Low Profit Margin",
-        "condition": lambda o: o.get("profit_margin", 1) < 0.10
-    },
-    {
-        "name": "Weekend Order",
-        "condition": lambda o: o.get("order_is_weekend", 0) == 1
-    },
-    {
-        "name": "High Discount Rate",
-        "condition": lambda o: o.get("discount_rate", 0) > 0.20
-    }
-]
-
-ACTION_MAP = {
-    "Standard Shipping": [
-        {"action": "Upgrade to Express Shipping", "priority": "High"},
-        {"action": "Review shipping SLA", "priority": "Medium"}
-    ],
-    "High Risk Region": [
-        {"action": "Notify Regional Manager", "priority": "High"},
-        {"action": "Increase shipment monitoring", "priority": "Medium"}
-    ],
-    "Large Shipment Volume": [
-        {"action": "Allocate additional warehouse staff", "priority": "Medium"},
-        {"action": "Split shipment into smaller batches", "priority": "Low"}
-    ],
-    "Long Delivery Window": [
-        {"action": "Expedite processing at origin warehouse", "priority": "Medium"}
-    ],
-    "High Value Shipment": [
-        {"action": "Enable priority handling", "priority": "High"},
-        {"action": "Assign dedicated logistics coordinator", "priority": "Medium"}
-    ],
-    "Low Profit Margin": [
-        {"action": "Review pricing strategy", "priority": "Medium"},
-        {"action": "Reduce operational costs", "priority": "Low"}
-    ],
-    "Weekend Order": [
-        {"action": "Verify warehouse staffing", "priority": "Medium"},
-        {"action": "Schedule early dispatch", "priority": "Low"}
-    ],
-    "High Discount Rate": [
-        {"action": "Review order profitability", "priority": "Low"}
-    ]
-}
+from src.core.logging import logger
+from src.feature_builder import build_features
+from src.models.predict_delay import predict_delay
 
 
 # -----------------------------
@@ -160,7 +74,7 @@ def generate_actions(causes: list, prediction: dict) -> list:
     if risk_level == "Critical":
         escalations = [
             {"action": "Notify Supply Chain Head", "priority": "Urgent"},
-            {"action": "Prepare customer communication", "priority": "High"}
+            {"action": "Prepare customer communication", "priority": "High"},
         ]
         for esc in escalations:
             if esc["action"] not in seen_actions:
@@ -195,14 +109,6 @@ def assign_priority(risk_level: str) -> str:
 # -----------------------------
 # Module 4: Business Impact Estimator
 # -----------------------------
-OPERATIONAL_PRIORITY_MAP = {
-    "Low": "Routine",
-    "Medium": "Normal",
-    "High": "Urgent",
-    "Critical": "Immediate"
-}
-
-
 def load_impact_rules() -> dict:
     """Load impact estimation rules from config file."""
     with open(IMPACT_RULES_PATH, "r") as f:
@@ -211,7 +117,7 @@ def load_impact_rules() -> dict:
 
 def estimate_business_impact(
     prediction: dict,
-    recommendations: list
+    recommendations: list,
 ) -> dict:
     """
     Estimate the business impact of applying the recommendations.
@@ -241,7 +147,7 @@ def estimate_business_impact(
         "estimated_cost_saving_usd": total_cost_saving,
         "customer_risk": risk_level,
         "operational_priority": OPERATIONAL_PRIORITY_MAP.get(risk_level, "Normal"),
-        "recommendations_count": len(recommendations)
+        "recommendations_count": len(recommendations),
     }
 
 
@@ -259,8 +165,10 @@ def generate_recommendation(order_data: dict) -> dict:
         dict: Complete recommendation JSON with prediction,
               causes, recommendations, priority, and impact.
     """
-    # Step 1: Get delay prediction
-    prediction = predict_delay(order_data)
+    # Step 1: Ensure features are built with defaults for missing keys
+    features = build_features(order_data)
+    prediction = predict_delay(features)
+
 
     # Step 2: Analyze root causes
     causes = analyze_root_causes(order_data)
@@ -280,7 +188,7 @@ def generate_recommendation(order_data: dict) -> dict:
         "possible_causes": causes,
         "recommendations": recommendations,
         "priority": priority,
-        "business_impact": impact
+        "business_impact": impact,
     }
 
 
@@ -288,7 +196,6 @@ def generate_recommendation(order_data: dict) -> dict:
 # Entry Point
 # -----------------------------
 if __name__ == "__main__":
-    # Test with a sample order
     sample_order = {
         "Type": "DEBIT",
         "Category Name": "Fishing",
@@ -334,9 +241,9 @@ if __name__ == "__main__":
         "order_quantity": 2,
         "sales_per_unit": 160.25,
         "discount_rate": 0.04,
-        "profit_margin": 0.22
+        "profit_margin": 0.22,
     }
 
-    print("\n===== RECOMMENDATION ENGINE TEST =====\n")
+    logger.info("Running Recommendation Engine Standalone Test...")
     result = generate_recommendation(sample_order)
-    print(json.dumps(result, indent=4))
+    logger.info(f"Recommendation Engine Output:\n{json.dumps(result, indent=4)}")
