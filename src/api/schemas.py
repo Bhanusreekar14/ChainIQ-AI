@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -184,3 +184,64 @@ class ForecastPoint(BaseModel):
     period: str
     baseline_delay: float
     predicted_with_ai: float
+
+
+# -----------------------------
+# /reports Schemas
+# -----------------------------
+class ReportSummaryResponse(BaseModel):
+    """Schema for GET /reports/summary."""
+    total_shipments: int
+    high_risk_shipments: int
+    on_time_delivery_pct: float
+    delay_trend_avg: float
+    revenue_summary_usd: float
+    period: str = "Q2 2026"
+    confidence_score: float = 94.0
+    generated_at: str
+
+
+class MonthlyReportItem(BaseModel):
+    """Schema for single month entry in GET /reports/monthly."""
+    month: str
+    total_shipments: int
+    delayed_shipments: int
+    on_time_pct: float
+    revenue_usd: float
+
+
+# -----------------------------
+# /copilot Schemas
+# -----------------------------
+class CopilotChatMessageItem(BaseModel):
+    sender: str
+    text: str
+
+
+class CopilotChatRequest(BaseModel):
+    """Schema for POST /copilot/chat."""
+    query: str
+    history: Optional[List[CopilotChatMessageItem]] = None
+
+
+class CopilotChatResponse(BaseModel):
+    """Schema for response from POST /copilot/chat."""
+    answer: str
+    card_type: Optional[str] = None  # e.g., 'high_risk_table', 'region_risk', 'kpi_summary', 'action_recommendations', 'executive_summary'
+    card_data: Optional[Any] = None
+    confidence: float = 0.94
+    sources: List[str] = ["CatBoost Model v1.5", "ChainIQ Telemetry Engine"]
+    timestamp: str
+
+
+class CopilotSuggestionsResponse(BaseModel):
+    """Schema for GET /copilot/suggestions."""
+    suggestions: List[str]
+
+
+class CopilotContextResponse(BaseModel):
+    """Schema for GET /copilot/context."""
+    dashboard: Dict[str, Any]
+    analytics: Dict[str, Any]
+
+

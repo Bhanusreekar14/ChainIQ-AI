@@ -138,7 +138,68 @@ export interface ForecastPointData {
   predicted_with_ai: number;
 }
 
+// -----------------------------
+// Reports API Types
+// -----------------------------
+export interface ReportSummaryData {
+  total_shipments: number;
+  high_risk_shipments: number;
+  on_time_delivery_pct: number;
+  delay_trend_avg: number;
+  revenue_summary_usd: number;
+  period: string;
+  confidence_score: number;
+  generated_at: string;
+}
+
+export interface MonthlyReportItemData {
+  month: string;
+  total_shipments: number;
+  delayed_shipments: number;
+  on_time_pct: number;
+  revenue_usd: number;
+}
+
+// -----------------------------
+// Copilot API Types
+// -----------------------------
+export type CopilotCardType =
+  | 'high_risk_table'
+  | 'region_risk'
+  | 'kpi_summary'
+  | 'risk_distribution'
+  | 'executive_summary'
+  | 'action_recommendations'
+  | null;
+
+export interface CopilotChatMessagePayload {
+  sender: 'user' | 'assistant';
+  text: string;
+}
+
+export interface CopilotChatResponseData {
+  answer: string;
+  card_type?: CopilotCardType;
+  card_data?: any;
+  confidence: number;
+  sources: string[];
+  timestamp: string;
+}
+
+export interface CopilotChatMessage {
+  id: string;
+  sender: 'user' | 'assistant';
+  text: string;
+  timestamp: string;
+  card_type?: CopilotCardType;
+  card_data?: any;
+  confidence?: number;
+  sources?: string[];
+}
+
 export type TabType =
+
+
   | 'dashboard'
   | 'operations'
   | 'shipment'

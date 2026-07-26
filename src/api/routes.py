@@ -7,7 +7,7 @@ cost; every request after that is pure inference.
 """
 
 from typing import List, Optional
-from fastapi import APIRouter, Header, HTTPException, status
+from fastapi import APIRouter, Header, HTTPException, Response, status
 
 from src.agents.recommendation_engine import generate_recommendation
 from src.api.schemas import (
@@ -26,6 +26,12 @@ from src.api.schemas import (
     MarketPerformanceItem,
     SupplierScorecardItem,
     ForecastPoint,
+    ReportSummaryResponse,
+    MonthlyReportItem,
+    CopilotChatRequest,
+    CopilotChatResponse,
+    CopilotSuggestionsResponse,
+    CopilotContextResponse,
 )
 from src.core.logging import logger
 from src.feature_builder import build_features
@@ -44,6 +50,18 @@ from src.services.analytics_service import (
     get_market_performance,
     get_supplier_scorecard,
     get_forecast,
+)
+from src.services.report_service import (
+    get_summary_report,
+    get_monthly_report,
+    export_pdf_report,
+    export_csv_report,
+)
+from src.services.copilot_service import (
+    process_query,
+    get_quick_suggestions,
+    get_dashboard_context,
+    get_analytics_context,
 )
 
 _model = None
@@ -295,3 +313,107 @@ def analytics_forecast() -> List[ForecastPoint]:
     logger.info("Processing /analytics/forecast request")
     data = get_forecast()
     return [ForecastPoint(**item) for item in data]
+
+
+# -----------------------------
+# Reports Endpoints
+# -----------------------------
+@router.get(
+    "/reports/summary",
+    response_model=ReportSummaryResponse,
+    summary="Get aggregated executive summary report metrics",
+)
+def reports_summary() -> ReportSummaryResponse:
+    """Return aggregated executive report metrics."""
+    logger.info("Processing /reports/summary request")
+    data = get_summary_report()
+    return ReportSummaryResponse(**data)
+
+
+@router.get(
+    "/reports/monthly",
+    response_model=List[MonthlyReportItem],
+    summary="Get monthly historical logistics performance report",
+)
+def reports_monthly() -> List[MonthlyReportItem]:
+    """Return 6-month historical monthly breakdown."""
+    logger.info("Processing /reports/monthly request")
+    data = get_monthly_report()
+    return [MonthlyReportItem(**item) for item in data]
+
+
+@router.get(
+    "/reports/export/pdf",
+    summary="Download Executive Performance Report as PDF file",
+)
+def reports_export_pdf():
+    """Generate and return Executive Performance Report PDF document."""
+    logger.info("Processing /reports/export/pdf request")
+    pdf_bytes = export_pdf_report()
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": "attachment; filename=ChainIQ_Executive_Report.pdf"
+        },
+    )
+
+
+@router.get(
+    "/reports/export/csv",
+    summary="Download Logistics Performance Report as CSV file",
+)
+def reports_export_csv():
+    """Generate and return Logistics Performance Report CSV file."""
+    logger.info("Processing /reports/export/csv request")
+    csv_content = export_csv_report()
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=ChainIQ_Shipment_Report.csv"
+        },
+    )
+
+
+# -----------------------------
+# Copilot Endpoints
+# -----------------------------
+@router.post(
+    "/copilot/chat",
+    response_model=CopilotChatResponse,
+    summary="Process natural language supply chain query with ChainIQ Copilot",
+)
+def copilot_chat(request: CopilotChatRequest) -> CopilotChatResponse:
+    """Process natural language operational query and return text answer + rich UI card payload."""
+    logger.info(f"Processing /copilot/chat query: '{request.query}'")
+    history_dicts = [item.model_dump() for item in request.history] if request.history else None
+    result = process_query(request.query, history_dicts)
+    return CopilotChatResponse(**result)
+
+
+@router.get(
+    "/copilot/suggestions",
+    response_model=CopilotSuggestionsResponse,
+    summary="Get quick prompt suggestion chips for Copilot UI",
+)
+def copilot_suggestions() -> CopilotSuggestionsResponse:
+    """Return top dynamic prompt suggestion chips."""
+    logger.info("Processing /copilot/suggestions request")
+    suggestions = get_quick_suggestions()
+    return CopilotSuggestionsResponse(suggestions=suggestions)
+
+
+@router.get(
+    "/copilot/context",
+    response_model=CopilotContextResponse,
+    summary="Get full supply chain operational telemetry context",
+)
+def copilot_context() -> CopilotContextResponse:
+    """Return aggregated dashboard and analytics context."""
+    logger.info("Processing /copilot/context request")
+    dash = get_dashboard_context()
+    analytics = get_analytics_context()
+    return CopilotContextResponse(dashboard=dash, analytics=analytics)
+
+
