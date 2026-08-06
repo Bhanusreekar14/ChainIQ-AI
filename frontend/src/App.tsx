@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import type { TabType } from './types';
 import { AuthProvider } from './auth/AuthContext';
 import { ProtectedRoute } from './auth/ProtectedRoute';
@@ -15,9 +15,12 @@ import { Copilot } from './pages/Copilot';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
 import { Login } from './pages/Login';
+import { LandingPage } from './pages/LandingPage';
+import { IntroPage } from './pages/IntroPage';
 import { NotFound } from './pages/NotFound';
 
 const ProtectedLayoutWrapper: React.FC = () => {
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -68,8 +71,9 @@ export function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Default Start Route: Login Page */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* Default Marketing Landing Page & 3D Intro */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/intro" element={<IntroPage />} />
           <Route path="/login" element={<Login />} />
 
           {/* Protected Enterprise Routes */}

@@ -39,10 +39,10 @@ export const ShipmentForm: React.FC<ShipmentFormProps> = ({ onAnalyze, loading }
   };
 
   return (
-    <Card variant="glass" className="space-y-5 border-slate-800">
-      <div className="flex items-center gap-2 pb-3 border-b border-slate-800">
-        <Sparkles className="w-5 h-5 text-indigo-400" />
-        <h3 className="text-sm font-bold text-white">Shipment Order Details Input</h3>
+    <Card variant="default" className="space-y-5 bg-white border border-slate-200/80 shadow-xs">
+      <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
+        <Sparkles className="w-5 h-5 text-blue-600" />
+        <h3 className="text-sm font-bold text-slate-900">Shipment Order Details Input</h3>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -63,84 +63,82 @@ export const ShipmentForm: React.FC<ShipmentFormProps> = ({ onAnalyze, loading }
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Select
-            label="Shipping Mode"
-            name="Shipping_Mode"
-            value={formData.Shipping_Mode}
-            onChange={handleChange}
-            options={SHIPPING_MODES.map((mode) => ({ value: mode, label: mode }))}
-          />
+        <Select
+          label="Shipping Mode"
+          name="Shipping_Mode"
+          value={formData.Shipping_Mode}
+          onChange={handleChange}
+          options={SHIPPING_MODES.map((s) => ({ value: s, label: s }))}
+        />
 
+        <div className="grid grid-cols-2 gap-4">
           <Input
-            label="Order Quantity"
+            label="Quantity"
             type="number"
             name="Order_Item_Quantity"
             value={formData.Order_Item_Quantity}
             onChange={handleChange}
+            min={1}
+          />
+          <Input
+            label="Order Sales ($)"
+            type="number"
+            name="Sales"
+            value={formData.Sales}
+            onChange={handleChange}
+            step={10}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="Total Sales ($)"
-            type="number"
-            name="Sales"
-            step="0.1"
-            value={formData.Sales}
-            onChange={handleChange}
-          />
-
           <Input
             label="Profit Margin (0 - 1)"
             type="number"
             name="profit_margin"
-            step="0.01"
             value={formData.profit_margin}
             onChange={handleChange}
+            step={0.01}
           />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
           <Input
             label="Scheduled Days"
             type="number"
             name="scheduled_shipping_days"
             value={formData.scheduled_shipping_days}
             onChange={handleChange}
+            min={1}
           />
+        </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <Select
+            label="Dispatch Day"
+            name="order_is_weekend"
+            value={formData.order_is_weekend}
+            onChange={handleChange}
+            options={[
+              { value: 0, label: 'Weekday (Mon - Fri)' },
+              { value: 1, label: 'Weekend (Sat - Sun)' },
+            ]}
+          />
           <Input
             label="Discount Rate (0 - 1)"
             type="number"
             name="discount_rate"
-            step="0.01"
             value={formData.discount_rate}
             onChange={handleChange}
+            step={0.01}
           />
         </div>
 
-        <Select
-          label="Weekend Order?"
-          name="order_is_weekend"
-          value={formData.order_is_weekend}
-          onChange={handleChange}
-          options={[
-            { value: 0, label: 'No (Weekday Processing)' },
-            { value: 1, label: 'Yes (Weekend Dispatch)' },
-          ]}
-        />
-
         <Button
           type="submit"
-          variant="ai"
+          variant="primary"
           size="lg"
           isLoading={loading}
-          leftIcon={<Sparkles className="w-4 h-4" />}
           rightIcon={<ArrowRight className="w-4 h-4" />}
-          className="w-full mt-3 py-3.5 text-xs font-extrabold tracking-wide uppercase shadow-lg shadow-cyan-500/20"
+          className="w-full mt-2"
         >
-          {loading ? 'Executing AI Inference...' : '✨ Run AI Analysis'}
+          Predict Delay &amp; Recommend
         </Button>
       </form>
     </Card>

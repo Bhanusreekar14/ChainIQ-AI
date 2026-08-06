@@ -7,6 +7,7 @@ import {
   Bot,
   Activity,
   Cpu,
+  Sparkles,
 } from 'lucide-react';
 import type { TabType } from '../../types';
 import { useHealth } from '../../hooks/useHealth';
@@ -69,13 +70,25 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
           })}
         </nav>
 
-        {/* Backend Status Indicator */}
-        <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
-          <Activity className={`w-3.5 h-3.5 ${isHealthy ? 'text-emerald-400 animate-pulse' : 'text-rose-500'}`} />
-          <span className="text-slate-400">API Status:</span>
-          <span className={`font-semibold ${isHealthy ? 'text-emerald-400' : 'text-rose-400'}`}>
-            {isHealthy === null ? 'Connecting...' : isHealthy ? 'Online (CatBoost)' : 'Offline'}
-          </span>
+        {/* Actions & Backend Status Indicator */}
+        <div className="flex items-center gap-3">
+          <a
+            href="/intro"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 transition-all cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <span>3D Intro</span>
+          </a>
+
+          <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800">
+            <Activity className={`w-3.5 h-3.5 ${isHealthy ? 'text-emerald-400 animate-pulse' : 'text-rose-500'}`} />
+            <span className="text-slate-400">API Status:</span>
+            <span className={`font-semibold ${isHealthy ? 'text-emerald-400' : 'text-rose-400'}`}>
+              {isHealthy === null ? 'Connecting...' : isHealthy ? 'Online (CatBoost)' : 'Offline'}
+            </span>
+          </div>
         </div>
       </div>
     </header>

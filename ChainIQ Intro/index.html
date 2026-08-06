@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChainIQ AI — Autonomous Supply Chain Intelligence Platform</title>
+  <meta name="description" content="ChainIQ AI predicts disruptions, mitigates cascading supply chain failures, and automates global logistics decision-making in real-time.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    /* CSS RESETS & GLOBAL VARIABLES */
+    :root {
+      --bg-dark: #050811;
+      --bg-card: rgba(14, 23, 42, 0.65);
+      --bg-card-border: rgba(56, 189, 248, 0.18);
+      --bg-card-hover: rgba(15, 29, 58, 0.85);
+      
+      --cyan-glow: #00f2fe;
+      --blue-glow: #3b82f6;
+      --purple-glow: #8b5cf6;
+      --pink-accent: #ec4899;
+      --emerald-accent: #10b981;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --font-heading: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+      --neon-glow: 0 0 25px rgba(0, 242, 254, 0.25);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      line-height: 1.6;
+      selection-background-color: var(--cyan-glow);
+      selection-color: #000;
+    }
+
+    /* CUSTOM SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cyan-glow);
+    }
+
+    /* CANVAS BACKGROUND */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* GLASS CONTAINER UTILITY */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 16px;
+      box-shadow: var(--glass-shadow);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 242, 254, 0.4);
+      box-shadow: 0 12px 40px rgba(0, 242, 254, 0.15);
+      transform: translateY(-4px);
+    }
+
+    /* HEADER & NAVIGATION */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 1rem 2rem;
+      transition: background 0.3s ease;
+    }
+    header.scrolled {
+      background: rgba(5, 8, 17, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .brand-logo img {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.4));
+      transition: transform 0.3s ease;
+    }
+    .brand-logo:hover img {
+      transform: scale(1.08) rotate(2deg);
+    }
+    .brand-name {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .brand-name span {
+      background: linear-gradient(135deg, var(--cyan-glow), var(--blue-glow));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    .nav-links a:hover {
+      color: var(--cyan-glow);
+    }
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--emerald-accent);
+      font-weight: 600;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--emerald-accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--emerald-accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+    .btn-launch {
+      background: linear-gradient(135deg, var(--cyan-glow), var(--blue-glow));
+      color: #000;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-launch:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(0, 242, 254, 0.5);
+    }
+
+    /* HERO SECTION */
+    .hero {
+      min-height: 100vh;
+      padding: 160px 2rem 80px 2rem;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .hero-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 30px;
+      font-size: 0.85rem;
+      color: var(--cyan-glow);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 3.8rem;
+      line-height: 1.1;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      letter-spacing: -1.5px;
+    }
+    .hero-title .gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, var(--cyan-glow) 50%, var(--purple-glow) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+      font-weight: 400;
+    }
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      padding: 12px 26px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--cyan-glow);
+      color: var(--cyan-glow);
+    }
+    
+    /* HERO LOGO STAGE */
+    .hero-logo-stage {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+    }
+    .logo-ring {
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      border: 2px dashed rgba(0, 242, 254, 0.25);
+      animation: rotateRing 25s linear infinite;
+    }
+    .logo-ring-outer {
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      animation: rotateRingRev 35s linear infinite;
+    }
+    @keyframes rotateRing {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes rotateRingRev {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+    .hero-infinity-card {
+      position: relative;
+      z-index: 2;
+      padding: 2.5rem;
+      border-radius: 28px;
+      background: rgba(14, 23, 42, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      box-shadow: 0 0 50px rgba(0, 242, 254, 0.2);
+      text-align: center;
+      transform-style: preserve-3d;
+      transition: transform 0.2s ease-out;
+    }
+    .hero-infinity-img {
+      width: 240px;
+      height: auto;
+      filter: drop-shadow(0 0 25px rgba(0, 242, 254, 0.6));
+      animation: floatLogo 4s ease-in-out infinite;
+    }
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-12px) scale(1.03); }
+    }
+
+    /* STATS STRIP */
+    .stats-strip {
+      max-width: 1280px;
+      margin: -20px auto 100px auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      padding: 0 2rem;
+    }
+    .stat-box {
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--cyan-glow), #ffffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.3rem;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* SECTION TITLE BUILDER */
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 4rem auto;
+    }
+    .section-tag {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--cyan-glow);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -0.5px;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* BENTO FEATURES GRID */
+    .features-section {
+      max-width: 1280px;
+      margin: 0 auto 120px auto;
+      padding: 0 2rem;
+    }
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .bento-large {
+      grid-column: span 2;
+    }
+    .feature-card {
+      padding: 2.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan-glow);
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+    .feature-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+    .feature-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--blue-glow);
+      background: rgba(59, 130, 246, 0.12);
+      padding: 4px 10px;
+      border-radius: 6px;
+      align-self: flex-start;
+    }
+
+    /* LIVE SIMULATOR SECTION */
+    .simulator-section {
+      max-width: 1280px;
+      margin: 0 auto 120px auto;
+      padding: 0 2rem;
+    }
+    .simulator-box {
+      padding: 2.5rem;
+      border-radius: 24px;
+      background: rgba(10, 17, 40, 0.85);
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+    .sim-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .sim-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sim-badge {
+      background: rgba(236, 72, 153, 0.15);
+      color: var(--pink-accent);
+      border: 1px solid rgba(236, 72, 153, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .sim-controls {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .sim-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .sim-btn.active, .sim-btn:hover {
+      background: rgba(0, 242, 254, 0.15);
+      border-color: var(--cyan-glow);
+      color: var(--cyan-glow);
+    }
+
+    .sim-viewport {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    .map-container {
+      position: relative;
+      height: 340px;
+      background: rgba(5, 8, 17, 0.9);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .map-svg {
+      width: 100%;
+      height: 100%;
+    }
+    .sim-log-panel {
+      background: rgba(5, 8, 17, 0.7);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 1.5rem;
+      height: 340px;
+      display: flex;
+      flex-direction: column;
+    }
+    .log-header {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--cyan-glow);
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .log-content {
+      font-family: monospace;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .log-item {
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--blue-glow);
+      border-radius: 4px;
+      animation: fadeIn 0.4s ease;
+    }
+    .log-item.warning { border-left-color: #f59e0b; color: #fbbf24; }
+    .log-item.success { border-left-color: var(--emerald-accent); color: #34d399; }
+    .log-item.critical { border-left-color: var(--pink-accent); color: #f472b6; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ROI CALCULATOR SECTION */
+    .roi-section {
+      max-width: 1280px;
+      margin: 0 auto 120px auto;
+      padding: 0 2rem;
+    }
+    .roi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    .roi-sliders {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+    .slider-group label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.6rem;
+    }
+    .slider-val {
+      color: var(--cyan-glow);
+      font-family: var(--font-heading);
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan-glow);
+      background: rgba(255, 255, 255, 0.1);
+      height: 6px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .roi-result-card {
+      padding: 2.5rem;
+      text-align: center;
+      background: linear-gradient(145deg, rgba(14, 23, 42, 0.9), rgba(15, 29, 58, 0.95));
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      box-shadow: 0 0 40px rgba(0, 242, 254, 0.15);
+    }
+    .roi-highlight {
+      font-family: var(--font-heading);
+      font-size: 3.4rem;
+      font-weight: 800;
+      color: var(--cyan-glow);
+      margin: 1rem 0;
+      text-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 4rem 2rem 2rem 2rem;
+      background: rgba(3, 5, 12, 0.95);
+    }
+    .footer-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    .footer-about p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      max-width: 320px;
+    }
+    .footer-title {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      color: #fff;
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+    .footer-links a:hover {
+      color: var(--cyan-glow);
+    }
+    .footer-bottom {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    /* RESPONSIVE MEDIA QUERIES */
+    @media (max-width: 1024px) {
+      .hero-container { grid-template-columns: 1fr; text-align: center; }
+      .hero-subtitle { margin: 0 auto 2.5rem auto; }
+      .hero-cta-group { justify-content: center; }
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-large { grid-column: span 1; }
+      .sim-viewport { grid-template-columns: 1fr; }
+      .roi-grid { grid-template-columns: 1fr; }
+      .stats-strip { grid-template-columns: repeat(2, 1fr); }
+      .footer-container { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .hero-title { font-size: 2.6rem; }
+      .stats-strip { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .footer-container { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND CANVAS FOR PARTICLES & SUPPLY CHAIN NODES -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- HEADER NAVIGATION -->
+  <header id="main-header">
+    <div class="nav-container">
+      <a href="#" class="brand-logo">
+        <img src="logo.png" alt="ChainIQ Infinity Logo" id="header-logo">
+        <span class="brand-name">Chain<span>IQ</span> AI</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#features">Capabilities</a></li>
+        <li><a href="#simulator">Live Simulator</a></li>
+        <li><a href="#roi">ROI Calculator</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+      </ul>
+
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="nav-status">
+          <span class="status-dot"></span>
+          AI CORE ONLINE
+        </div>
+        <a href="../frontend/index.html" class="btn-launch" target="_blank">
+          Launch App <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Autonomous Logistics Intelligence v2.4
+        </div>
+        <h1 class="hero-title">
+          Predict Disruptions. <br>
+          <span class="gradient-text">Master Supply Chains.</span>
+        </h1>
+        <p class="hero-subtitle">
+          ChainIQ harnesses real-time machine learning & CatBoost predictive analytics to spot shipment delays, map cascading supplier risks, and automate global rerouting before bottlenecks happen.
+        </p>
+        
+        <div class="hero-cta-group">
+          <a href="../frontend/index.html" class="btn-launch" style="padding: 14px 32px; font-size: 1.05rem;">
+            <i class="fa-solid fa-rocket"></i> Open Dashboard
+          </a>
+          <a href="#simulator" class="btn-secondary" style="padding: 14px 28px; font-size: 1.05rem;">
+            <i class="fa-solid fa-play"></i> Test AI Simulator
+          </a>
+        </div>
+      </div>
+
+      <!-- HERO LOGO STAGE WITH 3D TILT -->
+      <div class="hero-logo-stage">
+        <div class="logo-ring"></div>
+        <div class="logo-ring-outer"></div>
+        
+        <div class="hero-infinity-card glass-card" id="tilt-card">
+          <img src="logo.png" alt="ChainIQ Infinity Logo 3D" class="hero-infinity-img">
+          <h2 style="font-family: var(--font-heading); margin-top: 1.2rem; font-size: 1.5rem; letter-spacing: -0.5px;">
+            Infinite Supply Chain Vision
+          </h2>
+          <p style="font-size: 0.85rem; color: var(--cyan-glow); margin-top: 0.4rem; font-weight: 600;">
+            <i class="fa-solid fa-bolt"></i> Real-time Predictive Graph Engine
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS TICKER STRIP -->
+  <div class="stats-strip">
+    <div class="stat-box glass-card">
+      <div class="stat-number">$42M+</div>
+      <div class="stat-label">Loss Avoided for Clients</div>
+    </div>
+    <div class="stat-box glass-card">
+      <div class="stat-number">99.4%</div>
+      <div class="stat-label">Delay Prediction Accuracy</div>
+    </div>
+    <div class="stat-box glass-card">
+      <div class="stat-number">12,500+</div>
+      <div class="stat-label">Global Routes Monitored</div>
+    </div>
+    <div class="stat-box glass-card">
+      <div class="stat-number">&lt; 45ms</div>
+      <div class="stat-label">Cascade AI Reaction Time</div>
+    </div>
+  </div>
+
+  <!-- BENTO FEATURES GRID -->
+  <section class="features-section" id="features">
+    <div class="section-header">
+      <span class="section-tag">Next-Gen Capabilities</span>
+      <h2 class="section-title">Engineered for Global Resilience</h2>
+      <p class="section-desc">Four core AI pillars working continuously to prevent bottlenecks and safeguard delivery SLA commitments.</p>
+    </div>
+
+    <div class="bento-grid">
+      <!-- Feature 1: Large -->
+      <div class="feature-card glass-card bento-large">
+        <div>
+          <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <h3>Shipment Delay Predictive Engine</h3>
+          <p>Utilizes multi-parameter CatBoost machine learning models to forecast ETA deviations up to 14 days in advance, integrating real-time AIS marine tracking, weather anomalies, and port congestion metrics.</p>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 1rem;">
+          <span class="feature-tag">CatBoost ML</span>
+          <span class="feature-tag">Live AIS Stream</span>
+          <span class="feature-tag">99.4% Precision</span>
+        </div>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="feature-card glass-card">
+        <div>
+          <div class="feature-icon" style="color: var(--pink-accent); background: rgba(236,72,153,0.1); border-color: rgba(236,72,153,0.25);">
+            <i class="fa-solid fa-diagram-project"></i>
+          </div>
+          <h3>Cascading Failure Graph</h3>
+          <p>Maps sub-tier supplier dependencies to detect single points of failure before a Tier-3 breakdown halts assembly lines.</p>
+        </div>
+        <span class="feature-tag" style="color: var(--pink-accent); background: rgba(236,72,153,0.12);">Graph Neural Nets</span>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature-card glass-card">
+        <div>
+          <div class="feature-icon" style="color: var(--purple-glow); background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.25);">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3>Autonomous Mitigation</h3>
+          <p>Instantly recommends optimized alternative freight carriers and optimal safety stock redeployment with 1-click execution.</p>
+        </div>
+        <span class="feature-tag" style="color: var(--purple-glow); background: rgba(139,92,246,0.12);">Auto-Rerouting</span>
+      </div>
+
+      <!-- Feature 4: Large -->
+      <div class="feature-card glass-card bento-large">
+        <div>
+          <div class="feature-icon" style="color: var(--emerald-accent); background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.25);">
+            <i class="fa-solid fa-warehouse"></i>
+          </div>
+          <h3>Inventory & Stock Risk Intelligence</h3>
+          <p>Real-time inventory depletion simulation matched with lead-time volatility to ensure zero stockout risk for high-priority SKUs across global distribution centers.</p>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 1rem;">
+          <span class="feature-tag" style="color: var(--emerald-accent); background: rgba(16,185,129,0.12);">SKU Heatmaps</span>
+          <span class="feature-tag" style="color: var(--emerald-accent); background: rgba(16,185,129,0.12);">Buffer Optimization</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE SIMULATOR -->
+  <section class="simulator-section" id="simulator">
+    <div class="section-header">
+      <span class="section-tag">Interactive Preview</span>
+      <h2 class="section-title">Test ChainIQ Disruption AI</h2>
+      <p class="section-desc">Select a disruption event below to watch the autonomous AI engine re-evaluate global supply routes in real-time.</p>
+    </div>
+
+    <div class="simulator-box glass-card">
+      <div class="sim-header">
+        <div class="sim-title-group">
+          <span class="sim-badge">LIVE SIMULATION</span>
+          <h3 style="font-family: var(--font-heading); font-size: 1.2rem;">Global Route Optimization Control</h3>
+        </div>
+        
+        <div class="sim-controls">
+          <button class="sim-btn active" onclick="runSimulation('rotterdam', this)">
+            <i class="fa-solid fa-anchor"></i> Rotterdam Port Delay
+          </button>
+          <button class="sim-btn" onclick="runSimulation('typhoon', this)">
+            <i class="fa-solid fa-wind"></i> Pacific Typhoon
+          </button>
+          <button class="sim-btn" onclick="runSimulation('supplier', this)">
+            <i class="fa-solid fa-truck-ramp-box"></i> Tier-2 Supplier Outage
+          </button>
+        </div>
+      </div>
+
+      <div class="sim-viewport">
+        <div class="map-container" id="sim-map">
+          <!-- Interactive SVG Route Visualizer -->
+          <svg class="map-svg" viewBox="0 0 800 400" id="route-svg">
+            <defs>
+              <linearGradient id="routeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#00f2fe" />
+                <stop offset="100%" stop-color="#8b5cf6" />
+              </linearGradient>
+              <linearGradient id="altRouteGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#10b981" />
+                <stop offset="100%" stop-color="#3b82f6" />
+              </linearGradient>
+            </defs>
+            <!-- Map Background Grid -->
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+            </pattern>
+            <rect width="800" height="400" fill="url(#grid)" />
+
+            <!-- Continents Outlines (Simplified Styling) -->
+            <path d="M 120,80 Q 200,60 280,100 T 240,220 T 100,160 Z" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+            <path d="M 480,90 Q 620,70 720,120 T 680,260 T 460,200 Z" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)"/>
+
+            <!-- Route Primary Path -->
+            <path id="primary-path" d="M 180,140 C 300,80 500,80 620,160" fill="none" stroke="url(#routeGrad)" stroke-width="4" stroke-dasharray="8 4"/>
+            <!-- Reroute Path (Hidden by default) -->
+            <path id="alt-path" d="M 180,140 C 300,260 520,240 620,160" fill="none" stroke="url(#altRouteGrad)" stroke-width="4" stroke-dasharray="6 4" opacity="0.3"/>
+
+            <!-- Nodes -->
+            <circle cx="180" cy="140" r="8" fill="#00f2fe" id="node-origin"/>
+            <text x="180" y="170" fill="#94a3b8" font-size="12" text-anchor="middle">Shanghai Hub</text>
+
+            <circle cx="400" cy="90" r="10" fill="#ef4444" id="node-disruption"/>
+            <text x="400" y="65" fill="#f87171" font-size="12" text-anchor="middle" font-weight="bold" id="disrupt-label">Bottleneck Node</text>
+
+            <circle cx="620" cy="160" r="8" fill="#10b981" id="node-dest"/>
+            <text x="620" y="190" fill="#94a3b8" font-size="12" text-anchor="middle">Rotterdam Port</text>
+
+            <!-- Animated Pulse Marker -->
+            <circle cx="180" cy="140" r="6" fill="#fff" id="ship-marker">
+              <animateAttribute attributeName="cx" dur="4s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+
+        <div class="sim-log-panel">
+          <div class="log-header">
+            <span>REAL-TIME AI LOGS</span>
+            <span id="sim-status-indicator" style="color: var(--emerald-accent);">[ACTIVE MONITORING]</span>
+          </div>
+          <div class="log-content" id="log-container">
+            <div class="log-item">[00:00:01] System Initialized. 1,420 Active Cargo Vessels Tracked.</div>
+            <div class="log-item success">[00:00:03] AIS Vessel 'Ever-Forward' reporting nominal velocity (19.4 knots).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROI CALCULATOR -->
+  <section class="roi-section" id="roi">
+    <div class="section-header">
+      <span class="section-tag">Value Estimation</span>
+      <h2 class="section-title">Calculate Your Supply Chain Savings</h2>
+      <p class="section-desc">Estimate annual cost reduction achieved through automated delay prediction and risk mitigation.</p>
+    </div>
+
+    <div class="roi-grid">
+      <div class="roi-sliders glass-card" style="padding: 2.2rem;">
+        <div class="slider-group">
+          <label>Annual Freight Spend: <span class="slider-val" id="val-spend">$25M</span></label>
+          <input type="range" id="input-spend" min="5" max="200" value="25" oninput="updateROI()">
+        </div>
+
+        <div class="slider-group">
+          <label>Active Global Routes: <span class="slider-val" id="val-routes">150</span></label>
+          <input type="range" id="input-routes" min="10" max="1000" value="150" oninput="updateROI()">
+        </div>
+
+        <div class="slider-group">
+          <label>Average Delay Penalty / Day: <span class="slider-val" id="val-penalty">$12,000</span></label>
+          <input type="range" id="input-penalty" min="2000" max="50000" step="1000" value="12000" oninput="updateROI()">
+        </div>
+      </div>
+
+      <div class="roi-result-card glass-card">
+        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+          Estimated Annual Cost Reduction
+        </span>
+        <div class="roi-highlight" id="roi-output">$2,450,000</div>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+          Includes prevented demurrage charges, expedited freight savings, and automated safety-stock optimization.
+        </p>
+        <a href="../frontend/index.html" class="btn-launch" style="justify-content: center; width: 100%;">
+          Start Free Enterprise Trial
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-about">
+        <a href="#" class="brand-logo">
+          <img src="logo.png" alt="ChainIQ Infinity Logo">
+          <span class="brand-name">Chain<span>IQ</span> AI</span>
+        </a>
+        <p>
+          Next-generation autonomous supply chain intelligence platform powering predictive logistics resilience for global enterprises.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="footer-title">Platform</h4>
+        <ul class="footer-links">
+          <li><a href="#features">Delay Prediction</a></li>
+          <li><a href="#features">Cascading Risk</a></li>
+          <li><a href="#simulator">Route Simulator</a></li>
+          <li><a href="../frontend/index.html">Live Dashboard</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-title">Technology</h4>
+        <ul class="footer-links">
+          <li><a href="#">CatBoost ML Models</a></li>
+          <li><a href="#">FastAPI Architecture</a></li>
+          <li><a href="#">PostgreSQL Engine</a></li>
+          <li><a href="#">React + TypeScript</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-title">System Status</h4>
+        <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="display: flex; align-items: center; gap: 8px; color: var(--emerald-accent); font-weight: 600; font-size: 0.85rem;">
+            <span class="status-dot"></span> All Systems Operational
+          </div>
+          <p style="color: var(--text-dim); font-size: 0.78rem; margin-top: 6px;">
+            API Latency: 24ms | ML Inference: 42ms
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 ChainIQ AI Inc. All rights reserved.</div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="#" style="color: var(--text-dim); text-decoration: none;">Privacy Policy</a>
+        <a href="#" style="color: var(--text-dim); text-decoration: none;">Terms of Service</a>
+        <a href="#" style="color: var(--text-dim); text-decoration: none;">Security Audit</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+  <script>
+    /* 1. BACKGROUND CANVAS PARTICLES & NETWORK NODES */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+
+    function initCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      particles = [];
+      const particleCount = Math.floor(width / 18);
+      
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          radius: Math.random() * 2 + 1,
+          alpha: Math.random() * 0.5 + 0.2
+        });
+      }
+    }
+
+    function animateCanvas() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw background ambient gradient
+      const grad = ctx.createRadialGradient(width/2, height/3, 100, width/2, height/3, width);
+      grad.addColorStop(0, 'rgba(10, 20, 50, 0.4)');
+      grad.addColorStop(1, 'rgba(5, 8, 17, 1)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw particle nodes & links
+      for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 242, 254, ${p.alpha})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#00f2fe';
+        ctx.fill();
+
+        // Connect nearby nodes
+        for (let j = i + 1; j < particles.length; j++) {
+          let p2 = particles[j];
+          let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist < 130) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(0, 242, 254, ${0.15 * (1 - dist / 130)})`;
+            ctx.lineWidth = 0.8;
+            ctx.shadowBlur = 0;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animateCanvas);
+    }
+
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+    animateCanvas();
+
+    /* 2. HEADER SCROLL EFFECT */
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('main-header');
+      if (window.scrollY > 40) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    /* 3. HERO 3D TILT EFFECT ON MOUSE MOVE */
+    const tiltCard = document.getElementById('tilt-card');
+    document.addEventListener('mousemove', (e) => {
+      if (!tiltCard) return;
+      const x = (window.innerWidth / 2 - e.pageX) / 30;
+      const y = (window.innerHeight / 2 - e.pageY) / 30;
+      tiltCard.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    });
+
+    /* 4. DISRUPTION SIMULATOR LOGIC */
+    const logContainer = document.getElementById('log-container');
+    const primaryPath = document.getElementById('primary-path');
+    const altPath = document.getElementById('alt-path');
+    const disruptLabel = document.getElementById('disrupt-label');
+    const nodeDisruption = document.getElementById('node-disruption');
+
+    function appendLog(message, type = '') {
+      const timeStr = new Date().toTimeString().split(' ')[0];
+      const logDiv = document.createElement('div');
+      logDiv.className = `log-item ${type}`;
+      logDiv.innerText = `[${timeStr}] ${message}`;
+      logContainer.appendChild(logDiv);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function runSimulation(scenario, btn) {
+      // Highlight button
+      document.querySelectorAll('.sim-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      logContainer.innerHTML = '';
+      appendLog('Initiating AI Disruption Impact Analysis...', '');
+
+      if (scenario === 'rotterdam') {
+        disruptLabel.innerText = "Port Congestion (4.2d Delay)";
+        nodeDisruption.setAttribute('fill', '#ef4444');
+        primaryPath.setAttribute('stroke', '#ef4444');
+        altPath.style.opacity = '1';
+
+        setTimeout(() => appendLog('CRITICAL: Rotterdam Port berth queue exceeded 28 vessels.', 'critical'), 400);
+        setTimeout(() => appendLog('CatBoost Model predicted +96 hours arrival deviation.', 'warning'), 900);
+        setTimeout(() => appendLog('AI Graph Engine executing reroute via Antwerp Hub...', 'warning'), 1500);
+        setTimeout(() => appendLog('SUCCESS: Reroute optimal! Saved 3.5 days & $142,000 demurrage fee.', 'success'), 2200);
+
+      } else if (scenario === 'typhoon') {
+        disruptLabel.innerText = "Typhoon Category 4 Alert";
+        nodeDisruption.setAttribute('fill', '#f59e0b');
+        primaryPath.setAttribute('stroke', '#f59e0b');
+        altPath.style.opacity = '1';
+
+        setTimeout(() => appendLog('ALERT: Severe storm system detected in Philippine Sea.', 'warning'), 400);
+        setTimeout(() => appendLog('AI recalculating wave resistance & vessel speed vector.', 'warning'), 1000);
+        setTimeout(() => appendLog('Adjusting waypoint south by 180 nautical miles.', 'success'), 1600);
+        setTimeout(() => appendLog('SUCCESS: Route optimized. Zero cargo risk rating maintained.', 'success'), 2300);
+
+      } else if (scenario === 'supplier') {
+        disruptLabel.innerText = "Tier-2 Semiconductor Outage";
+        nodeDisruption.setAttribute('fill', '#ec4899');
+        primaryPath.setAttribute('stroke', '#ec4899');
+        altPath.style.opacity = '1';
+
+        setTimeout(() => appendLog('WARNING: Supplier MicroTech Inc reporting line shutdown.', 'critical'), 400);
+        setTimeout(() => appendLog('Cascading analysis: Assembly line impact in 72 hours.', 'warning'), 1100);
+        setTimeout(() => appendLog('Auto-allocating 4,000 units safety stock from Munich warehouse.', 'success'), 1800);
+        setTimeout(() => appendLog('SUCCESS: Supply disruption absorbed with 0 downtime.', 'success'), 2500);
+      }
+    }
+
+    /* 5. ROI CALCULATOR LOGIC */
+    function updateROI() {
+      const spend = parseInt(document.getElementById('input-spend').value);
+      const routes = parseInt(document.getElementById('input-routes').value);
+      const penalty = parseInt(document.getElementById('input-penalty').value);
+
+      document.getElementById('val-spend').innerText = '$' + spend + 'M';
+      document.getElementById('val-routes').innerText = routes;
+      document.getElementById('val-penalty').innerText = '$' + penalty.toLocaleString();
+
+      // Calculation Formula
+      const estimatedSavings = Math.round((spend * 1000000 * 0.045) + (routes * 3500) + (penalty * 35));
+      document.getElementById('roi-output').innerText = '$' + estimatedSavings.toLocaleString();
+    }
+
+    // Initialize default ROI
+    updateROI();
+  </script>
+</body>
+</html>

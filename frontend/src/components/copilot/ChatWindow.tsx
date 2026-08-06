@@ -52,13 +52,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     switch (type) {
       case 'high_risk_table':
         return (
-          <div className="mt-3 p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2 overflow-x-auto">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-rose-400 uppercase tracking-wider">
+          <div className="mt-3 p-3 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2 overflow-x-auto text-slate-900">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-rose-600 uppercase tracking-wider">
               <AlertTriangle className="w-3.5 h-3.5" />
               <span>Today's High-Risk Watchlist Orders</span>
             </div>
-            <table className="w-full text-left text-[11px] text-slate-300">
-              <thead className="text-slate-500 border-b border-slate-800">
+            <table className="w-full text-left text-[11px] text-slate-700">
+              <thead className="text-slate-500 border-b border-slate-200">
                 <tr>
                   <th className="pb-1.5 font-semibold">Order ID</th>
                   <th className="pb-1.5 font-semibold">Market</th>
@@ -67,17 +67,17 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                   <th className="pb-1.5 font-semibold text-right">Value</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100">
                 {Array.isArray(data) &&
                   data.map((item: any, idx: number) => (
-                    <tr key={idx} className="hover:bg-slate-900/50">
-                      <td className="py-1.5 font-semibold text-white">{item.order_id}</td>
-                      <td className="py-1.5 text-slate-300">{item.market}</td>
-                      <td className="py-1.5 text-slate-400">{item.shipping_mode}</td>
-                      <td className="py-1.5 text-right font-bold text-rose-400">
+                    <tr key={idx} className="hover:bg-slate-50">
+                      <td className="py-1.5 font-bold text-slate-900">{item.order_id}</td>
+                      <td className="py-1.5 text-slate-600">{item.market}</td>
+                      <td className="py-1.5 text-slate-500">{item.shipping_mode}</td>
+                      <td className="py-1.5 text-right font-bold text-rose-600">
                         {item.delay_probability}%
                       </td>
-                      <td className="py-1.5 text-right font-mono text-amber-300">
+                      <td className="py-1.5 text-right font-mono text-slate-800">
                         {formatCurrency(item.sales_usd)}
                       </td>
                     </tr>
@@ -89,8 +89,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
       case 'region_risk':
         return (
-          <div className="mt-3 p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-cyan-400 uppercase tracking-wider">
+          <div className="mt-3 p-3 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2 text-slate-900">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 uppercase tracking-wider">
               <TrendingDown className="w-3.5 h-3.5" />
               <span>Regional Market Delay Vulnerability Ranking</span>
             </div>
@@ -99,12 +99,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 data.map((m: any, idx: number) => (
                   <div key={idx} className="space-y-1">
                     <div className="flex justify-between text-[11px]">
-                      <span className="font-semibold text-slate-200">{m.market}</span>
-                      <span className="font-bold text-cyan-300">{m.delay_probability}%</span>
+                      <span className="font-semibold text-slate-800">{m.market}</span>
+                      <span className="font-bold text-blue-600">{m.delay_probability}%</span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-cyan-500 to-indigo-500 rounded-full"
+                        className="h-full bg-blue-600 rounded-full"
                         style={{ width: `${m.delay_probability}%` }}
                       />
                     </div>
@@ -117,27 +117,27 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       case 'kpi_summary':
         return (
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 space-y-0.5">
-              <span className="text-[10px] text-slate-400">Total Orders</span>
-              <p className="font-bold text-white text-sm">
+            <div className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-0.5 shadow-2xs">
+              <span className="text-[10px] text-slate-500 font-semibold">Total Orders</span>
+              <p className="font-bold text-slate-900 text-sm">
                 {data.total_shipments ? data.total_shipments.toLocaleString() : '180,519'}
               </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 space-y-0.5">
-              <span className="text-[10px] text-slate-400">High Risk Count</span>
-              <p className="font-bold text-rose-400 text-sm">
+            <div className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-0.5 shadow-2xs">
+              <span className="text-[10px] text-slate-500 font-semibold">High Risk Count</span>
+              <p className="font-bold text-rose-600 text-sm">
                 {data.high_risk_shipments ? data.high_risk_shipments.toLocaleString() : '256'}
               </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 space-y-0.5">
-              <span className="text-[10px] text-slate-400">Avg Delay Prob</span>
-              <p className="font-bold text-cyan-400 text-sm">
+            <div className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-0.5 shadow-2xs">
+              <span className="text-[10px] text-slate-500 font-semibold">Avg Delay Prob</span>
+              <p className="font-bold text-blue-600 text-sm">
                 {data.average_delay_probability}%
               </p>
             </div>
-            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 space-y-0.5">
-              <span className="text-[10px] text-slate-400">Net Cost Savings</span>
-              <p className="font-bold text-emerald-400 text-sm">
+            <div className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-0.5 shadow-2xs">
+              <span className="text-[10px] text-slate-500 font-semibold">Net Cost Savings</span>
+              <p className="font-bold text-emerald-600 text-sm">
                 {formatCurrency(data.estimated_cost_savings || 412850)}
               </p>
             </div>
@@ -146,27 +146,27 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
       case 'risk_distribution':
         return (
-          <div className="mt-3 p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-400 uppercase tracking-wider">
+          <div className="mt-3 p-3 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2 text-slate-900">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 uppercase tracking-wider">
               <ShieldAlert className="w-3.5 h-3.5" />
               <span>Total Order Breakdown Across 4 Risk Tiers</span>
             </div>
             <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
-              <div className="p-2 rounded-lg bg-emerald-950/30 border border-emerald-500/20 flex justify-between items-center">
-                <span className="text-slate-300">Low Risk ({data.low_pct}%)</span>
-                <span className="font-bold text-emerald-400">{data.low_count?.toLocaleString()}</span>
+              <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-100 flex justify-between items-center">
+                <span className="text-slate-700 font-medium">Low Risk ({data.low_pct}%)</span>
+                <span className="font-bold text-emerald-700">{data.low_count?.toLocaleString()}</span>
               </div>
-              <div className="p-2 rounded-lg bg-amber-950/30 border border-amber-500/20 flex justify-between items-center">
-                <span className="text-slate-300">Medium ({data.medium_pct}%)</span>
-                <span className="font-bold text-amber-400">{data.medium_count?.toLocaleString()}</span>
+              <div className="p-2 rounded-lg bg-amber-50 border border-amber-100 flex justify-between items-center">
+                <span className="text-slate-700 font-medium">Medium ({data.medium_pct}%)</span>
+                <span className="font-bold text-amber-700">{data.medium_count?.toLocaleString()}</span>
               </div>
-              <div className="p-2 rounded-lg bg-orange-950/30 border border-orange-500/20 flex justify-between items-center">
-                <span className="text-slate-300">High Risk ({data.high_pct}%)</span>
-                <span className="font-bold text-orange-400">{data.high_count?.toLocaleString()}</span>
+              <div className="p-2 rounded-lg bg-orange-50 border border-orange-100 flex justify-between items-center">
+                <span className="text-slate-700 font-medium">High Risk ({data.high_pct}%)</span>
+                <span className="font-bold text-orange-700">{data.high_count?.toLocaleString()}</span>
               </div>
-              <div className="p-2 rounded-lg bg-rose-950/30 border border-rose-500/20 flex justify-between items-center">
-                <span className="text-slate-300">Critical ({data.critical_pct}%)</span>
-                <span className="font-bold text-rose-400">{data.critical_count?.toLocaleString()}</span>
+              <div className="p-2 rounded-lg bg-rose-50 border border-rose-100 flex justify-between items-center">
+                <span className="text-slate-700 font-medium">Critical ({data.critical_pct}%)</span>
+                <span className="font-bold text-rose-700">{data.critical_count?.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -174,15 +174,15 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
       case 'executive_summary':
         return (
-          <div className="mt-3 p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/30 text-xs space-y-2">
-            <div className="font-bold text-indigo-300 flex items-center justify-between">
+          <div className="mt-3 p-3.5 rounded-xl bg-blue-50/70 border border-blue-100 text-xs space-y-2 text-slate-900">
+            <div className="font-bold text-blue-900 flex items-center justify-between">
               <span>{data.title || 'Executive Intelligence Brief'}</span>
               <Badge variant="indigo" size="sm">Confidential</Badge>
             </div>
-            <p className="text-slate-300 leading-relaxed text-[11px]">
-              Processed <strong className="text-white">{data.total_shipments?.toLocaleString()}</strong> order vectors.
-              Achieved <strong className="text-emerald-400">{data.on_time_fulfillment_pct}%</strong> on-time fulfillment rate, generating{' '}
-              <strong className="text-emerald-400">{formatCurrency(data.total_savings_usd || 412850)}</strong> in financial SLA savings.
+            <p className="text-slate-700 leading-relaxed text-[11px]">
+              Processed <strong className="text-slate-900">{data.total_shipments?.toLocaleString()}</strong> order vectors.
+              Achieved <strong className="text-emerald-700">{data.on_time_fulfillment_pct}%</strong> on-time fulfillment rate, generating{' '}
+              <strong className="text-emerald-700">{formatCurrency(data.total_savings_usd || 412850)}</strong> in financial SLA savings.
             </p>
           </div>
         );
@@ -194,9 +194,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               data.map((act: any, idx: number) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center gap-3"
+                  className="p-3 rounded-xl bg-white border border-slate-200 flex justify-between items-center gap-3 shadow-2xs"
                 >
-                  <span className="font-semibold text-slate-200 text-[11px] flex-1">
+                  <span className="font-semibold text-slate-800 text-[11px] flex-1">
                     {act.action}
                   </span>
                   <Badge variant="low" size="sm">{act.impact}</Badge>
@@ -211,25 +211,25 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   return (
-    <Card variant="glass" className="flex flex-col h-[580px] p-0 overflow-hidden shadow-2xl border-slate-800">
+    <Card variant="glass" className="flex flex-col h-[580px] p-0 overflow-hidden shadow-xs border-slate-200 bg-white">
       {/* Header */}
-      <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+      <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-white">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-500/20 border border-cyan-500/30 text-cyan-400">
+          <div className="p-2 rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
             <Bot className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-extrabold text-white tracking-tight">
+            <h3 className="text-sm font-bold text-slate-900 tracking-tight">
               ChainIQ Enterprise Supply Chain Copilot
             </h3>
-            <p className="text-[10px] text-slate-400">
+            <p className="text-[10px] text-slate-500 font-medium">
               CatBoost ML Telemetry Engine • v1.5 Online
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="px-2.5 py-1 text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 rounded-full border border-emerald-500/30">
+          <span className="px-2.5 py-1 text-[10px] font-semibold bg-emerald-50 text-emerald-700 rounded-md border border-emerald-200">
             Online
           </span>
           {onClearChat && (
@@ -247,7 +247,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 p-5 overflow-y-auto space-y-5">
+      <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50/40">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -261,21 +261,21 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             />
 
             <div
-              className={`max-w-[85%] sm:max-w-[75%] p-4 rounded-2xl text-xs leading-relaxed space-y-1 relative group ${
+              className={`max-w-[85%] sm:max-w-[75%] p-4 rounded-xl text-xs leading-relaxed space-y-1 relative group ${
                 msg.sender === 'user'
-                  ? 'bg-indigo-600 text-white rounded-tr-none shadow-lg shadow-indigo-500/10'
-                  : 'bg-slate-900/95 text-slate-200 border border-slate-800/90 rounded-tl-none shadow-md'
+                  ? 'bg-blue-600 text-white rounded-tr-none shadow-2xs'
+                  : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none shadow-2xs'
               }`}
             >
-              <div className="flex items-center justify-between gap-4 mb-1 border-b border-slate-800/50 pb-1">
+              <div className="flex items-center justify-between gap-4 mb-1 border-b border-slate-100 pb-1">
                 <span className="font-bold text-[10px] uppercase text-slate-400 flex items-center gap-1.5">
                   {msg.sender === 'user' ? (
                     'You'
                   ) : (
                     <>
-                      <span>ChainIQ Copilot</span>
+                      <span className="text-slate-600">ChainIQ Copilot</span>
                       {msg.confidence && (
-                        <span className="text-[9px] text-cyan-400 font-mono">
+                        <span className="text-[9px] text-blue-600 font-mono">
                           ({(msg.confidence * 100).toFixed(0)}% conf)
                         </span>
                       )}
@@ -288,11 +288,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                   {msg.sender === 'assistant' && (
                     <button
                       onClick={() => handleCopy(msg.id, msg.text)}
-                      className="text-slate-500 hover:text-slate-200 transition-colors cursor-pointer p-0.5"
+                      className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer p-0.5"
                       title="Copy response"
                     >
                       {copiedId === msg.id ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
                       ) : (
                         <Copy className="w-3.5 h-3.5" />
                       )}
@@ -314,7 +314,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                   {msg.sources.map((src, i) => (
                     <span
                       key={i}
-                      className="px-1.5 py-0.5 text-[9px] font-mono bg-slate-950 text-slate-400 rounded border border-slate-800"
+                      className="px-1.5 py-0.5 text-[9px] font-mono bg-slate-100 text-slate-600 rounded border border-slate-200"
                     >
                       {src}
                     </span>
@@ -331,17 +331,17 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       {/* Input Bar */}
       <form
         onSubmit={handleSubmit}
-        className="p-4 border-t border-slate-800/80 bg-slate-900/90 flex gap-3"
+        className="p-4 border-t border-slate-200 bg-white flex gap-3"
       >
         <input
           type="text"
           placeholder="Ask ChainIQ Copilot: 'Show high-risk shipments', 'Which region has highest delay?', etc..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+          className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white transition-colors"
         />
         <Button
-          variant="ai"
+          variant="primary"
           size="md"
           rightIcon={<Send className="w-4 h-4" />}
           disabled={!input.trim() || isTyping}

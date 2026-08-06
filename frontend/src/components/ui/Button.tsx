@@ -21,21 +21,21 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-150 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
   const sizeStyles = {
     sm: 'px-3 py-1.5 text-xs gap-1.5',
     md: 'px-4 py-2 text-xs gap-2',
-    lg: 'px-6 py-3 text-sm gap-2.5',
+    lg: 'px-5 py-2.5 text-sm gap-2',
   };
 
   const variantStyles = {
-    primary: 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-500/20 active:scale-[0.98]',
-    secondary: 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700/60',
-    outline: 'bg-transparent hover:bg-slate-800/60 text-slate-200 border border-slate-700',
-    ghost: 'bg-transparent hover:bg-slate-800/50 text-slate-400 hover:text-slate-200',
-    danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-500/20',
-    ai: 'bg-gradient-to-r from-indigo-600 via-cyan-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-lg shadow-indigo-500/25 active:scale-[0.98]',
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs active:scale-[0.99]',
+    secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/80',
+    outline: 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs',
+    ghost: 'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900',
+    danger: 'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
+    ai: 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs active:scale-[0.99]',
   };
 
   return (

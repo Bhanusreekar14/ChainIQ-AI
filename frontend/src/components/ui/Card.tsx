@@ -14,20 +14,20 @@ export const Card: React.FC<CardProps> = ({
   ...props
 }) => {
   const variantStyles = {
-    default: 'bg-slate-900/80 border border-slate-800/80',
-    glass: 'glass-panel border border-slate-800/80',
-    indigo: 'bg-indigo-950/20 border border-indigo-500/30',
-    cyan: 'bg-cyan-950/20 border border-cyan-500/30',
-    rose: 'bg-rose-950/20 border border-rose-500/30',
-    amber: 'bg-amber-950/20 border border-amber-500/30',
+    default: 'bg-white border border-slate-200/80 shadow-xs',
+    glass: 'bg-white border border-slate-200/80 shadow-xs',
+    indigo: 'bg-blue-50/50 border border-blue-100',
+    cyan: 'bg-sky-50/50 border border-sky-100',
+    rose: 'bg-rose-50/50 border border-rose-100',
+    amber: 'bg-amber-50/50 border border-amber-100',
   };
 
   return (
     <div
       className={cn(
-        'rounded-2xl p-6 transition-all duration-300 relative overflow-hidden',
+        'rounded-xl p-6 transition-all duration-200 relative overflow-hidden',
         variantStyles[variant],
-        hoverEffect && 'hover:border-slate-700 hover:shadow-xl hover:-translate-y-0.5',
+        hoverEffect && 'hover:border-slate-300 hover:shadow-sm',
         className
       )}
       {...props}

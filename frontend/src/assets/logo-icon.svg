@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none">
+  <defs>
+    <linearGradient id="blueGlowI" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0038FF"/>
+      <stop offset="35%" stop-color="#0066FF"/>
+      <stop offset="70%" stop-color="#00C2FF"/>
+      <stop offset="100%" stop-color="#002299"/>
+    </linearGradient>
+    <linearGradient id="innerShineI" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00144D"/>
+      <stop offset="50%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#BEE3F8"/>
+    </linearGradient>
+    <radialGradient id="highlightI" cx="45%" cy="25%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0066FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 3D Metallic Infinity Loop Symbol -->
+  <g transform="translate(0, 5)">
+    <path d="M 100,55 C 122,18 180,18 180,55 C 180,92 122,92 100,55 C 78,18 20,18 20,55 C 20,92 78,92 100,55 Z"
+          stroke="url(#blueGlowI)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 100,55 C 122,26 172,26 172,55 C 172,84 122,84 100,55 C 78,26 28,26 28,55 C 28,84 78,84 100,55 Z"
+          stroke="url(#innerShineI)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 100,55 C 122,29 167,29 167,55 C 167,81 122,81 100,55 C 78,29 33,29 33,55 C 33,81 78,81 100,55 Z"
+          stroke="url(#highlightI)" stroke-width="4" stroke-linecap="round" opacity="0.95"/>
+  </g>
+</svg>

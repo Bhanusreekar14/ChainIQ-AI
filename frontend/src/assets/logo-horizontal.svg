@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 90" fill="none">
+  <defs>
+    <linearGradient id="blueGlowH" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0038FF"/>
+      <stop offset="35%" stop-color="#0066FF"/>
+      <stop offset="70%" stop-color="#00C2FF"/>
+      <stop offset="100%" stop-color="#002299"/>
+    </linearGradient>
+    <linearGradient id="innerShineH" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00144D"/>
+      <stop offset="50%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#BEE3F8"/>
+    </linearGradient>
+    <radialGradient id="highlightH" cx="45%" cy="25%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0066FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Infinity Symbol on Left -->
+  <g transform="translate(10, 5)">
+    <path d="M 60,40 C 74,15 110,15 110,40 C 110,65 74,65 60,40 C 46,15 10,15 10,40 C 10,65 46,65 60,40 Z"
+          stroke="url(#blueGlowH)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 60,40 C 74,21 104,21 104,40 C 104,59 74,59 60,40 C 46,21 16,21 16,40 C 16,59 46,59 60,40 Z"
+          stroke="url(#innerShineH)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 60,40 C 74,23 100,23 100,40 C 100,57 74,57 60,40 C 46,23 20,23 20,40 C 20,57 46,57 60,40 Z"
+          stroke="url(#highlightH)" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  </g>
+
+  <!-- Typography Right -->
+  <text x="140" y="48" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.8">
+    <tspan fill="#0F172A">Chain</tspan><tspan fill="#0066FF">IQ</tspan> <tspan fill="#64748B" font-weight="400">AI</tspan>
+  </text>
+
+  <!-- Subtitle -->
+  <text x="141" y="66" fill="#475569" font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="700" letter-spacing="1.2">
+    AI-POWERED DECISION INTELLIGENCE
+  </text>
+</svg>

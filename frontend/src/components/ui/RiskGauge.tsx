@@ -12,15 +12,15 @@ export const RiskGauge: React.FC<RiskGaugeProps> = ({ probability, riskLevel, co
   const getRiskColor = (level: string) => {
     switch (level) {
       case 'Low':
-        return { text: 'text-emerald-400', bg: 'bg-emerald-500/20', stroke: '#10B981', border: 'border-emerald-500/30' };
+        return { text: 'text-emerald-700', bg: 'bg-emerald-50', stroke: '#059669', border: 'border-emerald-200/60' };
       case 'Medium':
-        return { text: 'text-amber-400', bg: 'bg-amber-500/20', stroke: '#F59E0B', border: 'border-amber-500/30' };
+        return { text: 'text-amber-700', bg: 'bg-amber-50', stroke: '#D97706', border: 'border-amber-200/60' };
       case 'High':
-        return { text: 'text-orange-400', bg: 'bg-orange-500/20', stroke: '#F97316', border: 'border-orange-500/30' };
+        return { text: 'text-orange-700', bg: 'bg-orange-50', stroke: '#EA580C', border: 'border-orange-200/60' };
       case 'Critical':
-        return { text: 'text-rose-500', bg: 'bg-rose-500/20', stroke: '#EF4444', border: 'border-rose-500/30' };
+        return { text: 'text-rose-700', bg: 'bg-rose-50', stroke: '#DC2626', border: 'border-rose-200/60' };
       default:
-        return { text: 'text-cyan-400', bg: 'bg-cyan-500/20', stroke: '#06B6D4', border: 'border-cyan-500/30' };
+        return { text: 'text-blue-700', bg: 'bg-blue-50', stroke: '#2563EB', border: 'border-blue-200/60' };
     }
   };
 
@@ -32,15 +32,9 @@ export const RiskGauge: React.FC<RiskGaugeProps> = ({ probability, riskLevel, co
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className="flex flex-col items-center justify-center p-6 glass-panel rounded-2xl border border-slate-800 relative overflow-hidden">
-      {/* Background ambient glow */}
-      <div
-        className="absolute w-40 h-40 rounded-full blur-3xl opacity-20 pointer-events-none -top-10"
-        style={{ backgroundColor: colors.stroke }}
-      />
-
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-        Delay Probability Gauge
+    <div className="flex flex-col items-center justify-center p-6 bg-white rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+        Delay Risk Probability Gauge
       </h4>
 
       <div className="relative w-48 h-28 flex justify-center items-end">
@@ -49,11 +43,11 @@ export const RiskGauge: React.FC<RiskGaugeProps> = ({ probability, riskLevel, co
           <path
             d="M 10 80 A 70 70 0 0 1 150 80"
             fill="none"
-            stroke="#1E293B"
+            stroke="#e2e8f0"
             strokeWidth="12"
             strokeLinecap="round"
           />
-          {/* Animated Value Arc */}
+          {/* Value Arc */}
           <path
             d="M 10 80 A 70 70 0 0 1 150 80"
             fill="none"
@@ -62,29 +56,30 @@ export const RiskGauge: React.FC<RiskGaugeProps> = ({ probability, riskLevel, co
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
-            className="transition-all duration-1000 ease-out"
+            className="transition-all duration-700 ease-out"
           />
         </svg>
 
-        {/* Center Text */}
-        <div className="absolute bottom-2 text-center">
-          <span className={`text-4xl font-extrabold tracking-tight ${colors.text}`}>
+        {/* Center Percentage Display */}
+        <div className="absolute flex flex-col items-center bottom-2">
+          <span className="text-3xl font-extrabold text-slate-900 tracking-tight">
             {percentage}%
           </span>
-          <p className="text-[10px] text-slate-400 font-medium mt-0.5">Delay Probability</p>
+          <span className="text-[10px] text-slate-500 font-medium">Delay Prob</span>
         </div>
       </div>
 
-      {/* Risk Badge */}
-      <div className="mt-4 flex items-center gap-3">
-        <span
-          className={`px-3 py-1 text-xs font-extrabold uppercase tracking-wider rounded-full border ${colors.bg} ${colors.text} ${colors.border}`}
-        >
-          {riskLevel} Risk
-        </span>
-        <span className="text-xs text-slate-400 font-medium">
-          Confidence: <strong className="text-white">{confidence}%</strong>
-        </span>
+      {/* Risk Badge & Confidence Metrics */}
+      <div className="mt-3 flex items-center justify-between w-full pt-3 border-t border-slate-100 text-xs">
+        <div className="flex items-center gap-1.5">
+          <span className="text-slate-500 font-medium">Classification:</span>
+          <span className={`px-2 py-0.5 rounded-md font-bold text-[11px] ${colors.bg} ${colors.text} border ${colors.border}`}>
+            {riskLevel} Risk
+          </span>
+        </div>
+        <div className="text-slate-500 text-[11px] font-medium">
+          Confidence: <span className="font-bold text-slate-900">{(confidence * 100).toFixed(0)}%</span>
+        </div>
       </div>
     </div>
   );

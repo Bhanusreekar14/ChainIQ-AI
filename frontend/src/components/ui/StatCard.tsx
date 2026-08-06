@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card } from './Card';
-import { ACCENT_GRADIENTS } from '../../constants/colors';
 import { cn } from '../../lib/utils';
 
 export interface StatCardProps {
@@ -9,7 +8,7 @@ export interface StatCardProps {
   change?: string;
   isPositive?: boolean;
   icon: React.ReactNode;
-  accentColor?: keyof typeof ACCENT_GRADIENTS;
+  accentColor?: string;
   className?: string;
 }
 
@@ -19,21 +18,20 @@ export const StatCard: React.FC<StatCardProps> = ({
   change,
   isPositive,
   icon,
-  accentColor = 'indigo',
   className,
 }) => {
   return (
-    <Card hoverEffect variant="default" className={cn('flex items-start justify-between group', className)}>
+    <Card hoverEffect variant="default" className={cn('flex items-start justify-between group bg-white border border-slate-200 shadow-xs', className)}>
       <div>
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
           {title}
         </p>
-        <h3 className="text-2xl font-extrabold text-white tracking-tight">{value}</h3>
+        <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{value}</h3>
         {change && (
           <p
             className={cn(
-              'text-xs font-semibold mt-2.5 flex items-center gap-1',
-              isPositive ? 'text-emerald-400' : 'text-rose-400'
+              'text-xs font-semibold mt-2 flex items-center gap-1',
+              isPositive ? 'text-emerald-600' : 'text-rose-600'
             )}
           >
             <span>{isPositive ? '↑' : '↓'}</span>
@@ -42,7 +40,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         )}
       </div>
 
-      <div className={cn('p-3 rounded-xl bg-gradient-to-br border shrink-0', ACCENT_GRADIENTS[accentColor])}>
+      <div className="p-2.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 shrink-0">
         {icon}
       </div>
     </Card>

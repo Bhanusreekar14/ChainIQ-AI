@@ -9,3 +9,7 @@ fastapi
 uvicorn
 pydantic
 requests
+catboost
+sqlalchemy
+psycopg2-binary
+firebase-admin

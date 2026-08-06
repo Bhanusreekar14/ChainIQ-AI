@@ -17,7 +17,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-100 flex font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex font-sans selection:bg-blue-600 selection:text-white">
       {/* Fixed Vertical Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 

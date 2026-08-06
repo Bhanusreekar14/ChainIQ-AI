@@ -23,13 +23,11 @@ import type { ReportSummaryData, MonthlyReportItemData } from '../types';
 export const Reports: React.FC = () => {
   const [summary, setSummary] = useState<ReportSummaryData | null>(null);
   const [monthlyData, setMonthlyData] = useState<MonthlyReportItemData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [downloadingPdf, setDownloadingPdf] = useState<boolean>(false);
   const [downloadingCsv, setDownloadingCsv] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchReportsData = async () => {
-    setLoading(true);
     setError(null);
     try {
       const [sumData, monthData] = await Promise.all([getSummary(), getMonthly()]);
@@ -58,7 +56,7 @@ export const Reports: React.FC = () => {
         { month: 'Jun 2026', total_shipments: 31219, delayed_shipments: 4433, on_time_pct: 85.8, revenue_usd: 2250000.0 },
       ]);
     } finally {
-      setLoading(false);
+      // Data loaded
     }
   };
 
@@ -70,8 +68,8 @@ export const Reports: React.FC = () => {
     setDownloadingPdf(true);
     try {
       await downloadPDF();
-    } catch (err) {
-      console.error('PDF download error:', err);
+    } catch (e) {
+      console.error(e);
     } finally {
       setDownloadingPdf(false);
     }
@@ -81,8 +79,8 @@ export const Reports: React.FC = () => {
     setDownloadingCsv(true);
     try {
       await downloadCSV();
-    } catch (err) {
-      console.error('CSV download error:', err);
+    } catch (e) {
+      console.error(e);
     } finally {
       setDownloadingCsv(false);
     }
@@ -93,15 +91,14 @@ export const Reports: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-[1280px] mx-auto">
+    <div className="space-y-6">
       <PageHeader
-        badge="Executive Document Suite"
-        badgeIcon={<FileText className="w-4 h-4 text-indigo-400" />}
-        title="Executive AI Decision Reports"
-        description="Real-time C-suite logistics brief aggregating live CatBoost ML risk modeling, SLA fulfillment, and financial performance metrics."
+        title="Executive Reports & Export Center"
+        description="Aggregated supply chain metrics, monthly performance breakdown, and 1-click PDF/CSV document downloads."
+        badge="Live Telemetry Data"
+        badgeIcon={<FileText className="w-4 h-4 text-blue-600" />}
         actions={
-          <div className="flex flex-wrap items-center gap-3">
-            {loading && <Badge variant="indigo" size="md">Syncing Live Data...</Badge>}
+          <div className="flex items-center gap-2">
             <Button
               variant="primary"
               size="md"
@@ -135,7 +132,7 @@ export const Reports: React.FC = () => {
             </Button>
 
             <Button
-              variant="ai"
+              variant="outline"
               size="md"
               leftIcon={<Printer className="w-4 h-4" />}
               onClick={handlePrint}
@@ -147,7 +144,7 @@ export const Reports: React.FC = () => {
       />
 
       {error && (
-        <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between">
           <span>{error}</span>
           <Button variant="ghost" size="sm" onClick={fetchReportsData}>
             Retry
@@ -162,7 +159,7 @@ export const Reports: React.FC = () => {
           value={summary ? summary.total_shipments.toLocaleString() : '---'}
           change="+12.4% vs Q1"
           isPositive={true}
-          icon={<Package className="w-5 h-5 text-indigo-400" />}
+          icon={<Package className="w-5 h-5 text-blue-600" />}
           accentColor="indigo"
         />
         <KpiCard
@@ -170,7 +167,7 @@ export const Reports: React.FC = () => {
           value={summary ? summary.high_risk_shipments.toLocaleString() : '---'}
           change="-23.0% risk drop"
           isPositive={true}
-          icon={<AlertTriangle className="w-5 h-5 text-rose-400" />}
+          icon={<AlertTriangle className="w-5 h-5 text-rose-600" />}
           accentColor="rose"
         />
         <KpiCard
@@ -178,7 +175,7 @@ export const Reports: React.FC = () => {
           value={summary ? `${summary.on_time_delivery_pct}%` : '---'}
           change="+4.2% SLA gain"
           isPositive={true}
-          icon={<CheckCircle2 className="w-5 h-5 text-emerald-400" />}
+          icon={<CheckCircle2 className="w-5 h-5 text-emerald-600" />}
           accentColor="emerald"
         />
         <KpiCard
@@ -186,7 +183,7 @@ export const Reports: React.FC = () => {
           value={summary ? `${summary.delay_trend_avg}%` : '---'}
           change="-8.2% vs target"
           isPositive={true}
-          icon={<TrendingDown className="w-5 h-5 text-cyan-400" />}
+          icon={<TrendingDown className="w-5 h-5 text-blue-600" />}
           accentColor="cyan"
         />
         <KpiCard
@@ -194,20 +191,20 @@ export const Reports: React.FC = () => {
           value={summary ? formatCurrency(summary.revenue_summary_usd) : '---'}
           change="+$412.8K AI ROI"
           isPositive={true}
-          icon={<DollarSign className="w-5 h-5 text-amber-400" />}
+          icon={<DollarSign className="w-5 h-5 text-amber-600" />}
           accentColor="amber"
         />
       </div>
 
       {/* Printable / Viewable Main Executive Document */}
-      <Card variant="glass" className="p-8 space-y-8 border-slate-800 bg-slate-900/90 shadow-2xl">
+      <Card variant="default" className="p-8 space-y-8 border-slate-200 bg-white shadow-xs">
         {/* Document Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
           <div>
-            <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
               ChainIQ Enterprise Supply Chain Performance Report
             </h2>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               Reporting Period: {summary?.period || 'Q2 2026'} • Published: {summary?.generated_at || 'July 26, 2026'} • Engine: CatBoost Classifier v1.5
             </p>
           </div>
@@ -218,55 +215,55 @@ export const Reports: React.FC = () => {
 
         {/* 1. Executive Summary */}
         <div className="space-y-3">
-          <h3 className="text-sm font-extrabold text-cyan-400 uppercase tracking-wider">
+          <h3 className="text-sm font-bold text-blue-600 uppercase tracking-wider">
             1. Executive Summary &amp; ROI Impact
           </h3>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-700 leading-relaxed">
             During {summary?.period || 'Q2 2026'}, ChainIQ ML Decision Engine evaluated{' '}
-            <strong className="text-white">
+            <strong className="text-slate-900">
               {summary?.total_shipments ? summary.total_shipments.toLocaleString() : '180,519'} order vectors
             </strong>{' '}
             across 5 global regional hubs. CatBoost predictive modeling identified{' '}
-            <strong className="text-amber-300">Standard Freight to LATAM</strong> as the core bottleneck.
+            <strong className="text-amber-700">Standard Freight to LATAM</strong> as the core bottleneck.
             Prescribed express rerouting reduced baseline delay probability to{' '}
-            <strong className="text-emerald-400">{summary?.delay_trend_avg || 14.2}%</strong>, generating{' '}
-            <strong className="text-emerald-400">{formatCurrency(summary?.revenue_summary_usd ? 412850 : 412850)}</strong> in financial SLA savings.
+            <strong className="text-emerald-700 font-bold">{summary?.delay_trend_avg || 14.2}%</strong>, generating{' '}
+            <strong className="text-emerald-700 font-bold">{formatCurrency(summary?.revenue_summary_usd ? 412850 : 412850)}</strong> in financial SLA savings.
           </p>
         </div>
 
         {/* 2. Key Performance Metric Overview */}
         <div className="space-y-3">
-          <h3 className="text-sm font-extrabold text-cyan-400 uppercase tracking-wider">
+          <h3 className="text-sm font-bold text-blue-600 uppercase tracking-wider">
             2. Real Operational Aggregated KPIs
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-xs">
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-slate-400 text-[11px]">Total Shipments</span>
-              <p className="text-xl font-extrabold text-white">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+              <span className="text-slate-500 text-[11px] font-semibold uppercase">Total Shipments</span>
+              <p className="text-xl font-bold text-slate-900">
                 {summary ? summary.total_shipments.toLocaleString() : '180,519'}
               </p>
             </div>
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-slate-400 text-[11px]">High Risk Orders</span>
-              <p className="text-xl font-extrabold text-rose-400">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+              <span className="text-slate-500 text-[11px] font-semibold uppercase">High Risk Orders</span>
+              <p className="text-xl font-bold text-rose-600">
                 {summary ? summary.high_risk_shipments.toLocaleString() : '256'}
               </p>
             </div>
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-slate-400 text-[11px]">On-Time Fulfillment</span>
-              <p className="text-xl font-extrabold text-emerald-400">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+              <span className="text-slate-500 text-[11px] font-semibold uppercase">On-Time Fulfillment</span>
+              <p className="text-xl font-bold text-emerald-600">
                 {summary ? `${summary.on_time_delivery_pct}%` : '96.2%'}
               </p>
             </div>
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-slate-400 text-[11px]">Average Delay Rate</span>
-              <p className="text-xl font-extrabold text-cyan-400">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+              <span className="text-slate-500 text-[11px] font-semibold uppercase">Average Delay Rate</span>
+              <p className="text-xl font-bold text-blue-600">
                 {summary ? `${summary.delay_trend_avg}%` : '14.2%'}
               </p>
             </div>
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-slate-400 text-[11px]">Gross Revenue</span>
-              <p className="text-xl font-extrabold text-amber-400">
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+              <span className="text-slate-500 text-[11px] font-semibold uppercase">Gross Revenue</span>
+              <p className="text-xl font-bold text-slate-900">
                 {summary ? formatCurrency(summary.revenue_summary_usd) : '$12.45M'}
               </p>
             </div>
@@ -275,35 +272,35 @@ export const Reports: React.FC = () => {
 
         {/* 3. Monthly Performance Breakdown Table */}
         <div className="space-y-3">
-          <h3 className="text-sm font-extrabold text-cyan-400 uppercase tracking-wider flex items-center justify-between">
+          <h3 className="text-sm font-bold text-blue-600 uppercase tracking-wider flex items-center justify-between">
             <span>3. Monthly Performance Breakdown (Live Data)</span>
-            <span className="text-xs font-normal text-slate-400 lowercase">6-month trendline</span>
+            <span className="text-xs font-medium text-slate-400 lowercase">6-month trendline</span>
           </h3>
-          <div className="overflow-x-auto rounded-xl border border-slate-800">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 font-semibold border-b border-slate-800 uppercase tracking-wider text-[11px]">
+          <div className="overflow-x-auto rounded-xl border border-slate-200">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase tracking-wider text-[11px]">
                 <tr>
-                  <th className="py-3 px-4">Period</th>
-                  <th className="py-3 px-4 text-right">Total Orders</th>
-                  <th className="py-3 px-4 text-right">Delayed Orders</th>
-                  <th className="py-3 px-4 text-right">On-Time %</th>
-                  <th className="py-3 px-4 text-right">Monthly Revenue</th>
+                  <th className="py-3 px-4 font-semibold">Period</th>
+                  <th className="py-3 px-4 text-right font-semibold">Total Orders</th>
+                  <th className="py-3 px-4 text-right font-semibold">Delayed Orders</th>
+                  <th className="py-3 px-4 text-right font-semibold">On-Time %</th>
+                  <th className="py-3 px-4 text-right font-semibold">Monthly Revenue</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 bg-slate-900/60">
+              <tbody className="divide-y divide-slate-100 bg-white">
                 {monthlyData.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="py-3 px-4 font-semibold text-white">{row.month}</td>
-                    <td className="py-3 px-4 text-right font-mono text-slate-200">
+                  <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-3 px-4 font-bold text-slate-900">{row.month}</td>
+                    <td className="py-3 px-4 text-right font-mono text-slate-700">
                       {row.total_shipments.toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 text-right font-mono text-rose-400 font-semibold">
+                    <td className="py-3 px-4 text-right font-mono text-rose-600 font-bold">
                       {row.delayed_shipments.toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 text-right font-mono text-emerald-400 font-semibold">
+                    <td className="py-3 px-4 text-right font-mono text-emerald-600 font-bold">
                       {row.on_time_pct}%
                     </td>
-                    <td className="py-3 px-4 text-right font-mono text-amber-300">
+                    <td className="py-3 px-4 text-right font-mono text-slate-900 font-bold">
                       {formatCurrency(row.revenue_usd)}
                     </td>
                   </tr>
@@ -315,35 +312,35 @@ export const Reports: React.FC = () => {
 
         {/* 4. AI Decision Attribution & Recommendations */}
         <div className="space-y-3">
-          <h3 className="text-sm font-extrabold text-cyan-400 uppercase tracking-wider">
+          <h3 className="text-sm font-bold text-blue-600 uppercase tracking-wider">
             4. Prescribed Strategic Actions &amp; Savings
           </h3>
           <div className="space-y-2 text-xs">
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
-              <span className="font-semibold text-slate-200">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center">
+              <span className="font-semibold text-slate-800">
                 1. Automate Express Freight Upgrades for LATAM Orders &gt; $1,000 Sales
               </span>
-              <span className="font-bold text-emerald-400">+$245,000 Net Savings</span>
+              <span className="font-bold text-emerald-700">+$245,000 Net Savings</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
-              <span className="font-semibold text-slate-200">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center">
+              <span className="font-semibold text-slate-800">
                 2. Enable Early Sunday Dispatch Shift at Origin Warehouses
               </span>
-              <span className="font-bold text-emerald-400">+$112,500 Net Savings</span>
+              <span className="font-bold text-emerald-700">+$112,500 Net Savings</span>
             </div>
-            <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
-              <span className="font-semibold text-slate-200">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex justify-between items-center">
+              <span className="font-semibold text-slate-800">
                 3. Enforce Carrier OTIF Penalty Clause for Non-Compliant Suppliers
               </span>
-              <span className="font-bold text-emerald-400">+$55,350 Net Savings</span>
+              <span className="font-bold text-emerald-700">+$55,350 Net Savings</span>
             </div>
           </div>
         </div>
 
         {/* PDF/CSV Download Action Footer Banner */}
-        <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-          <span className="flex items-center gap-1.5 text-slate-400">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+        <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+          <span className="flex items-center gap-1.5 text-slate-500 font-medium">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
             Digitally Signed by ChainIQ Intelligence Engine • SHA256-CHNQ-9842
           </span>
           <div className="flex items-center gap-3">

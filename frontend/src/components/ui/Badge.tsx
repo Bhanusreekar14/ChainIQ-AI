@@ -19,19 +19,19 @@ export const Badge: React.FC<BadgeProps> = ({
   };
 
   const variantStyles = {
-    low: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold',
-    medium: 'bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold',
-    high: 'bg-orange-500/20 text-orange-400 border border-orange-500/30 font-semibold',
-    critical: 'bg-rose-500/20 text-rose-400 border border-rose-500/30 font-semibold',
-    urgent: 'bg-rose-600 text-white font-extrabold uppercase shadow-sm',
-    ai: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold',
-    indigo: 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 font-semibold',
-    slate: 'bg-slate-800 text-slate-300 border border-slate-700 font-semibold',
+    low: 'bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-semibold',
+    medium: 'bg-amber-50 text-amber-700 border border-amber-200/60 font-semibold',
+    high: 'bg-orange-50 text-orange-700 border border-orange-200/60 font-semibold',
+    critical: 'bg-rose-50 text-rose-700 border border-rose-200/60 font-semibold',
+    urgent: 'bg-rose-600 text-white font-semibold uppercase shadow-xs',
+    ai: 'bg-blue-50 text-blue-700 border border-blue-200/60 font-semibold',
+    indigo: 'bg-blue-50 text-blue-700 border border-blue-200/60 font-semibold',
+    slate: 'bg-slate-100 text-slate-700 border border-slate-200/60 font-semibold',
   };
 
   return (
     <span
-      className={cn('inline-flex items-center rounded-full font-sans tracking-wide shrink-0', sizeStyles[size], variantStyles[variant], className)}
+      className={cn('inline-flex items-center rounded-md font-sans tracking-tight shrink-0', sizeStyles[size], variantStyles[variant], className)}
       {...props}
     >
       {children}

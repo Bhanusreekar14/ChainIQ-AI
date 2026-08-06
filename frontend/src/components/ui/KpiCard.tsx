@@ -17,32 +17,32 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   icon,
   accentColor = 'indigo',
 }) => {
-  const getGradients = () => {
+  const getIconStyles = () => {
     switch (accentColor) {
       case 'cyan':
-        return 'from-cyan-500/20 to-blue-500/5 text-cyan-400 border-cyan-500/20';
+        return 'bg-blue-50 text-blue-600 border border-blue-100';
       case 'emerald':
-        return 'from-emerald-500/20 to-teal-500/5 text-emerald-400 border-emerald-500/20';
+        return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
       case 'rose':
-        return 'from-rose-500/20 to-pink-500/5 text-rose-400 border-rose-500/20';
+        return 'bg-rose-50 text-rose-600 border border-rose-100';
       case 'amber':
-        return 'from-amber-500/20 to-orange-500/5 text-amber-400 border-amber-500/20';
+        return 'bg-amber-50 text-amber-600 border border-amber-100';
       default:
-        return 'from-indigo-500/20 to-purple-500/5 text-indigo-400 border-indigo-500/20';
+        return 'bg-blue-50 text-blue-600 border border-blue-100';
     }
   };
 
   return (
-    <div className="glass-panel glass-panel-hover rounded-2xl p-5 border border-slate-800 flex items-start justify-between relative overflow-hidden group">
+    <div className="bg-white rounded-xl p-5 border border-slate-200/80 shadow-xs flex items-start justify-between relative overflow-hidden transition-all duration-150 hover:border-slate-300">
       <div>
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
           {title}
         </p>
-        <h3 className="text-2xl font-bold text-white tracking-tight">{value}</h3>
+        <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{value}</h3>
         {change && (
           <p
-            className={`text-xs font-medium mt-2 flex items-center gap-1 ${
-              isPositive ? 'text-emerald-400' : 'text-rose-400'
+            className={`text-xs font-semibold mt-2 flex items-center gap-1 ${
+              isPositive ? 'text-emerald-600' : 'text-rose-600'
             }`}
           >
             <span>{isPositive ? '↑' : '↓'}</span>
@@ -51,7 +51,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
         )}
       </div>
 
-      <div className={`p-3 rounded-xl bg-gradient-to-br border ${getGradients()}`}>
+      <div className={`p-2.5 rounded-lg ${getIconStyles()}`}>
         {icon}
       </div>
     </div>

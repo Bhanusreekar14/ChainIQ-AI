@@ -43,6 +43,14 @@ env/
 *.sln
 *.swp
 
+# Environment and dependencies
+.env
+.env.*
+.venv/
+node_modules/
+dist/
+build/
+
 # Data files (ignore large data sets)
 data/raw/*.csv
 data/processed/*.csv
@@ -50,4 +58,7 @@ data/synthetic/*.csv
 
 # CatBoost
 catboost_info/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
 

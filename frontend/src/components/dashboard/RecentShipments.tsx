@@ -17,18 +17,18 @@ export const RecentShipments: React.FC<RecentShipmentsProps> = ({
   setActiveTab,
 }) => {
   return (
-    <Card variant="glass" className="space-y-4">
+    <Card variant="default" className="space-y-4 bg-white border border-slate-200/80 shadow-xs">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Package className="w-5 h-5 text-indigo-400" />
+          <Package className="w-5 h-5 text-blue-600" />
           <div>
-            <h3 className="text-sm font-bold text-white">Recent High-Risk Watchlist</h3>
-            <p className="text-[10px] text-slate-400">Live CatBoost Delay Risk Scoring</p>
+            <h3 className="text-sm font-bold text-slate-900">Recent High-Risk Watchlist</h3>
+            <p className="text-[10px] text-slate-500 font-medium">Live CatBoost Delay Risk Scoring</p>
           </div>
         </div>
         <button
           onClick={() => setActiveTab('shipment')}
-          className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 transition-colors"
+          className="text-xs text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1 transition-colors cursor-pointer"
         >
           <span>View All</span>
           <ArrowUpRight className="w-3.5 h-3.5" />
@@ -38,35 +38,37 @@ export const RecentShipments: React.FC<RecentShipmentsProps> = ({
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase">
-              <th className="pb-3">Order ID</th>
-              <th className="pb-3">Market</th>
-              <th className="pb-3">Mode</th>
-              <th className="pb-3">Delay Prob</th>
-              <th className="pb-3">Risk Level</th>
-              <th className="pb-3 text-right">Value</th>
+            <tr className="border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase">
+              <th className="pb-3 font-semibold">Order ID</th>
+              <th className="pb-3 font-semibold">Market</th>
+              <th className="pb-3 font-semibold">Mode</th>
+              <th className="pb-3 font-semibold">Delay Prob</th>
+              <th className="pb-3 font-semibold">Risk Level</th>
+              <th className="pb-3 text-right font-semibold">Value</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 text-xs">
+          <tbody className="divide-y divide-slate-100 text-xs">
             {loading ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <tr key={i} className="animate-pulse">
-                  <td colSpan={6} className="py-3 bg-slate-900/40 rounded" />
+                  <td colSpan={6} className="py-3 bg-slate-50 rounded" />
                 </tr>
               ))
             ) : (
               shipments.map((s) => (
-                <tr key={s.order_id} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="py-3 font-mono font-bold text-white">{s.order_id}</td>
-                  <td className="py-3 text-slate-300">{s.market}</td>
-                  <td className="py-3 text-slate-400">{s.shipping_mode}</td>
-                  <td className="py-3 font-mono font-semibold text-rose-400">
+                <tr key={s.order_id} className="hover:bg-slate-50 transition-colors">
+                  <td className="py-3 font-mono font-bold text-slate-900">{s.order_id}</td>
+                  <td className="py-3 text-slate-700 font-medium">{s.market}</td>
+                  <td className="py-3 text-slate-500">{s.shipping_mode}</td>
+                  <td className="py-3 font-bold text-slate-900">
                     {formatPercent(s.delay_probability / 100)}
                   </td>
                   <td className="py-3">
                     <Badge
                       variant={
-                        s.risk === 'High' || s.risk === 'Critical'
+                        s.risk === 'High'
+                          ? 'high'
+                          : s.risk === 'Critical'
                           ? 'critical'
                           : s.risk === 'Medium'
                           ? 'medium'
@@ -74,10 +76,10 @@ export const RecentShipments: React.FC<RecentShipmentsProps> = ({
                       }
                       size="sm"
                     >
-                      {s.risk.toUpperCase()}
+                      {s.risk}
                     </Badge>
                   </td>
-                  <td className="py-3 text-right font-mono font-semibold text-white">
+                  <td className="py-3 text-right font-mono font-bold text-slate-900">
                     {formatCurrency(s.sales_usd)}
                   </td>
                 </tr>

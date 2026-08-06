@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <rect width="120" height="120" rx="28" fill="#2563EB"/>
+  <!-- Interlinked Nodes (Chain + Intelligence + Infinity) -->
+  <path d="M38 42C38 37.5817 41.5817 34 46 34H74C78.4183 34 82 37.5817 82 42V50C82 54.4183 78.4183 58 74 58H46C41.5817 58 38 54.4183 38 50V42Z" stroke="white" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M46 62C41.5817 62 38 65.5817 38 70V78C38 82.4183 41.5817 86 46 86H74C78.4183 86 82 82.4183 82 78V70C82 65.5817 78.4183 62 74 62H46Z" stroke="white" stroke-width="7" stroke-linejoin="round"/>
+  <circle cx="46" cy="46" r="5" fill="white"/>
+  <circle cx="74" cy="74" r="5" fill="white"/>
+  <line x1="74" y1="46" x2="46" y2="74" stroke="white" stroke-width="6" stroke-linecap="round"/>
+</svg>
