@@ -51,7 +51,7 @@ export const SavingsChart: React.FC<SavingsChartProps> = ({ savingsUSD = 412850,
             <XAxis dataKey="month" stroke="#94A3B8" fontSize={11} />
             <YAxis stroke="#94A3B8" fontSize={11} />
             <Tooltip
-              formatter={(val: any) => [`${formatCurrency(Number(val))}`, 'Monthly Net Savings']}
+              formatter={(val: unknown) => [`${formatCurrency(Number(val))}`, 'Monthly Net Savings']}
               contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
             />
             <Bar dataKey="savings" fill="#10B981" radius={[8, 8, 0, 0]} />

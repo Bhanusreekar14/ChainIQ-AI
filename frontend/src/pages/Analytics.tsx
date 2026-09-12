@@ -67,18 +67,48 @@ export const Analytics: React.FC = () => {
       setMarkets(mpRes);
       setSuppliers(ssRes);
       setForecast(fcRes);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-          'Unable to load live analytics data from FastAPI backend. Ensure server is running at http://127.0.0.1:8000.'
-      );
+    } catch (err: unknown) {
+      const errorMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        || 'Unable to load live analytics data from FastAPI backend. Ensure server is running at http://127.0.0.1:8000.';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAnalyticsData();
+    let isMounted = true;
+    Promise.all([
+      getOverview(),
+      getDelayTrend(),
+      getRiskDistribution(),
+      getMarketPerformance(),
+      getSupplierScorecard(),
+      getForecast(),
+    ])
+      .then(([ovRes, dtRes, rdRes, mpRes, ssRes, fcRes]) => {
+        if (isMounted) {
+          setOverview(ovRes);
+          setDelayTrend(dtRes);
+          setRiskDist(rdRes);
+          setMarkets(mpRes);
+          setSuppliers(ssRes);
+          setForecast(fcRes);
+          setLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (isMounted) {
+          const errorMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+            || 'Unable to load live analytics data from FastAPI backend. Ensure server is running at http://127.0.0.1:8000.';
+          setError(errorMsg);
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [filters]);
 
   const handleResetFilters = () => {

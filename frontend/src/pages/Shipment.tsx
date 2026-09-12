@@ -10,8 +10,9 @@ import { BusinessImpactCard } from '../components/shipment/BusinessImpact';
 import { AiThinkingLoader } from '../components/shipment/AiThinkingLoader';
 import { ScenarioCompareModal } from '../components/shipment/ScenarioCompareModal';
 import { ReportModal } from '../components/shipment/ReportModal';
+import { BatchCsvUploadModal } from '../components/shipment/BatchCsvUploadModal';
 import { EmptyState } from '../components/ui/EmptyState';
-import { Sparkles, SlidersHorizontal, Download, AlertOctagon, RefreshCw } from 'lucide-react';
+import { Sparkles, SlidersHorizontal, Download, AlertOctagon, RefreshCw, FileSpreadsheet } from 'lucide-react';
 import type { RecommendationResponse, ShipmentPayload } from '../types';
 import { analyzeShipment } from '../services/shipmentService';
 
@@ -37,6 +38,7 @@ export const Shipment: React.FC = () => {
   // Modal Controls
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [isBatchOpen, setIsBatchOpen] = useState(false);
 
   const handleAnalyze = async (payload: ShipmentPayload) => {
     setLastPayload(payload);
@@ -46,10 +48,11 @@ export const Shipment: React.FC = () => {
       const res = await analyzeShipment(payload);
       setPendingResult(res);
       setIsThinking(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { detail?: Array<{ msg?: string }>; message?: string } } };
       const msg =
-        err.response?.data?.detail?.[0]?.msg ||
-        err.response?.data?.message ||
+        errorObj.response?.data?.detail?.[0]?.msg ||
+        errorObj.response?.data?.message ||
         'Unable to contact ChainIQ AI Engine. Ensure FastAPI server is running on http://127.0.0.1:8000.';
       setError(msg);
       setLoading(false);
@@ -70,26 +73,36 @@ export const Shipment: React.FC = () => {
         title="AI Shipment Analysis & Risk Engine"
         description="Connected to live FastAPI CatBoost backend. Evaluates order vectors for delay probability, feature attributions, and ROI interventions."
         actions={
-          result ? (
-            <>
-              <Button
-                variant="secondary"
-                size="md"
-                leftIcon={<SlidersHorizontal className="w-4 h-4" />}
-                onClick={() => setIsCompareOpen(true)}
-              >
-                Compare Scenario
-              </Button>
-              <Button
-                variant="ai"
-                size="md"
-                leftIcon={<Download className="w-4 h-4" />}
-                onClick={() => setIsReportOpen(true)}
-              >
-                Download AI Report
-              </Button>
-            </>
-          ) : undefined
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="md"
+              leftIcon={<FileSpreadsheet className="w-4 h-4 text-blue-600" />}
+              onClick={() => setIsBatchOpen(true)}
+            >
+              Batch CSV Upload
+            </Button>
+            {result && (
+              <>
+                <Button
+                  variant="secondary"
+                  size="md"
+                  leftIcon={<SlidersHorizontal className="w-4 h-4" />}
+                  onClick={() => setIsCompareOpen(true)}
+                >
+                  Compare Scenario
+                </Button>
+                <Button
+                  variant="ai"
+                  size="md"
+                  leftIcon={<Download className="w-4 h-4" />}
+                  onClick={() => setIsReportOpen(true)}
+                >
+                  Download AI Report
+                </Button>
+              </>
+            )}
+          </div>
         }
       />
 
@@ -145,6 +158,9 @@ export const Shipment: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Batch Prediction CSV Modal */}
+      <BatchCsvUploadModal isOpen={isBatchOpen} onClose={() => setIsBatchOpen(false)} />
 
       {/* Scenario Compare Modal */}
       {result && (

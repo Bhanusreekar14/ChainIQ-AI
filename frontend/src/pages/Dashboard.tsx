@@ -50,18 +50,44 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
       setRecentShipments(recentRes);
       setAlerts(alertRes);
       setAiBrief(aiRes);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-          'Unable to load live dashboard metrics from FastAPI backend. Ensure server is running at http://127.0.0.1:8000.'
-      );
+    } catch (err: unknown) {
+      const errorMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        || 'Unable to load live dashboard metrics from FastAPI backend. Ensure server is running at http://127.0.0.1:8000.';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDashboardData();
+    let isMounted = true;
+    Promise.all([
+      getSummary(),
+      getRecentShipments(),
+      getLiveAlerts(),
+      getAiSummary(),
+    ])
+      .then(([sumRes, recentRes, alertRes, aiRes]) => {
+        if (isMounted) {
+          setSummary(sumRes);
+          setRecentShipments(recentRes);
+          setAlerts(alertRes);
+          setAiBrief(aiRes);
+          setLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (isMounted) {
+          const errorMsg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+            || 'Unable to load live dashboard metrics from FastAPI backend. Ensure server is running at http://127.0.0.1:8000.';
+          setError(errorMsg);
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (

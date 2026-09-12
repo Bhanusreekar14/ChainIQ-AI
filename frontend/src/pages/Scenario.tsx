@@ -6,15 +6,17 @@ import { Select } from '../components/ui/Select';
 import { Input } from '../components/ui/Input';
 import { Badge } from '../components/ui/Badge';
 import { SlidersHorizontal, ArrowRight, Sparkles, TrendingDown } from 'lucide-react';
-import type { RecommendationResponse, ShipmentPayload } from '../types';
-import { analyzeShipment } from '../services/shipmentService';
+import type { RecommendationResponse, ShipmentPayload, SimulateRouteItemData } from '../types';
+import { analyzeShipment, simulateRoutesApi } from '../services/shipmentService';
 import { MARKETS, SHIPPING_MODES } from '../constants';
 import { formatCurrency, formatPercent } from '../lib/utils';
+import { Leaf, Clock, DollarSign, ShieldCheck } from 'lucide-react';
 
 export const Scenario: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [baseline, setBaseline] = useState<RecommendationResponse | null>(null);
   const [simulated, setSimulated] = useState<RecommendationResponse | null>(null);
+  const [routeOptions, setRouteOptions] = useState<SimulateRouteItemData[]>([]);
 
   const [baseInput, setBaseInput] = useState<ShipmentPayload>({
     Type: 'DEBIT',
@@ -43,14 +45,16 @@ export const Scenario: React.FC = () => {
   const handleSimulate = async () => {
     setLoading(true);
     try {
-      const [baseRes, simRes] = await Promise.all([
+      const [baseRes, simRes, multiRoutes] = await Promise.all([
         analyzeShipment(baseInput),
         analyzeShipment(simInput),
+        simulateRoutesApi(baseInput),
       ]);
       setBaseline(baseRes);
       setSimulated(simRes);
-    } catch (err) {
-      console.error(err);
+      setRouteOptions(multiRoutes);
+    } catch (err: unknown) {
+      console.error('Failed to run simulation:', err);
     } finally {
       setLoading(false);
     }
@@ -209,7 +213,7 @@ export const Scenario: React.FC = () => {
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-800">
                   <span className="text-slate-400">Active Causes</span>
-                  <span className="font-medium text-amber-300">{baseline.possible_causes.join(', ') || 'None'}</span>
+                  <span className="font-medium text-indigo-300">{baseline.possible_causes.join(', ') || 'None'}</span>
                 </div>
                 <div className="flex justify-between py-1">
                   <span className="text-slate-400">Projected Savings</span>
@@ -236,6 +240,74 @@ export const Scenario: React.FC = () => {
               </div>
             </Card>
           </div>
+
+          {/* Multi-Route Carrier Comparison Table */}
+          {routeOptions.length > 0 && (
+            <Card variant="glass" className="space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div>
+                  <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                    Multi-Route &amp; Shipping Mode What-If Trade-Off Matrix
+                  </h4>
+                  <p className="text-xs text-slate-400">Comparing Freight Cost, Est. Transit Days, Delay Risk %, and CO₂ Footprint</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {routeOptions.map((opt, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-4 rounded-xl border space-y-3 relative ${
+                      opt.recommended
+                        ? 'bg-blue-950/40 border-blue-500/60 shadow-lg'
+                        : 'bg-slate-950/60 border-slate-800'
+                    }`}
+                  >
+                    {opt.recommended && (
+                      <span className="absolute -top-2.5 right-3 px-2 py-0.5 text-[9px] font-bold uppercase bg-blue-600 text-white rounded-full">
+                        Recommended
+                      </span>
+                    )}
+
+                    <div>
+                      <h5 className="font-bold text-white text-xs">{opt.name}</h5>
+                      <p className="text-[10px] text-slate-400">{opt.tagline}</p>
+                    </div>
+
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="text-slate-400 flex items-center gap-1">
+                          <DollarSign className="w-3 h-3 text-blue-400" /> Cost:
+                        </span>
+                        <span className="font-mono font-bold text-white">${opt.est_freight_cost_usd}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="text-slate-400 flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-cyan-400" /> Transit:
+                        </span>
+                        <span className="font-mono font-bold text-cyan-300">{opt.est_transit_days} Days</span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="text-slate-400 flex items-center gap-1">
+                          <TrendingDown className="w-3 h-3 text-rose-400" /> Delay Risk:
+                        </span>
+                        <span className={`font-mono font-bold ${opt.delay_probability > 0.4 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                          {Math.round(opt.delay_probability * 100)}% ({opt.risk_level})
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="text-slate-400 flex items-center gap-1">
+                          <Leaf className="w-3 h-3 text-emerald-400" /> CO₂ Footprint:
+                        </span>
+                        <span className="font-mono font-bold text-emerald-400">{opt.co2_emissions_kg} kg</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
         </div>
       )}
     </div>

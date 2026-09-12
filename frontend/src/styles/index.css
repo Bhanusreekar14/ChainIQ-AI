@@ -32,6 +32,28 @@
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+@keyframes logoGlowPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0px rgba(59, 130, 246, 0)) brightness(1);
+  }
+  50% {
+    transform: scale(1.025);
+    filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.28)) brightness(1.04);
+  }
+}
+
+.animate-logo-pulse {
+  animation: logoGlowPulse 3.5s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-logo-pulse {
+    animation: none;
+  }
+}
+
 /* Custom Light Minimal Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

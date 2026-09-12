@@ -3,16 +3,25 @@ ChainIQ AI - FastAPI Backend Application.
 Enterprise-grade REST API for shipment delay prediction and decision intelligence.
 """
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.routes import router
 from src.core.logging import logger
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("ChainIQ AI Backend Server Starting Up...")
+    yield
+
+
 app = FastAPI(
     title="ChainIQ AI",
     description="AI-Powered Supply Chain Decision Intelligence Platform",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Register routes
@@ -22,15 +31,10 @@ app.include_router(router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def startup_event():
-    logger.info("ChainIQ AI Backend Server Starting Up...")
 
 
 @app.get("/")

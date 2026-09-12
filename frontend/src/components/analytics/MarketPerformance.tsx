@@ -44,7 +44,7 @@ export const MarketPerformance: React.FC<MarketPerformanceProps> = ({ markets, l
             <XAxis type="number" stroke="#94A3B8" fontSize={11} domain={[0, 80]} />
             <YAxis dataKey="market" type="category" stroke="#94A3B8" fontSize={11} width={90} />
             <Tooltip
-              formatter={(val: any) => [`${val}% Delay Rate`, 'Market Vulnerability']}
+              formatter={(val: unknown) => [`${val}% Delay Rate`, 'Market Vulnerability']}
               contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
             />
             <Bar dataKey="delay_probability" radius={[0, 8, 8, 0]}>

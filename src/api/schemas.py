@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # -----------------------------
@@ -7,8 +7,8 @@ from pydantic import BaseModel, Field
 # -----------------------------
 class LoginRequest(BaseModel):
     """Schema for POST /auth/login."""
-    email: str = Field(example="bhanu.sreekar@chainiq.ai")
-    password: str = Field(example="password123")
+    email: str = Field(json_schema_extra={"example": "bhanu.sreekar@chainiq.ai"})
+    password: str = Field(json_schema_extra={"example": "password123"})
 
 
 class UserProfile(BaseModel):
@@ -39,8 +39,8 @@ class PredictionRequest(BaseModel):
     order_is_weekend: int = 0
     discount_rate: float = 0.0
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "Type": "DEBIT",
                 "Market": "LATAM",
@@ -53,6 +53,14 @@ class PredictionRequest(BaseModel):
                 "discount_rate": 0.04
             }
         }
+    )
+
+
+class ShapAttributionItem(BaseModel):
+    """Schema for individual SHAP feature contribution."""
+    feature: str
+    impact: float
+    direction: str
 
 
 class PredictionResponse(BaseModel):
@@ -60,6 +68,43 @@ class PredictionResponse(BaseModel):
     delay_probability: float
     risk_level: str
     confidence: float
+    shap_attributions: Optional[List[ShapAttributionItem]] = None
+
+
+class BatchOrderItem(BaseModel):
+    """Schema for a single processed order in batch CSV predictions."""
+    row_index: int
+    order_id: str
+    type: str
+    market: str
+    shipping_mode: str
+    sales_usd: float
+    delay_probability: float
+    risk_level: str
+    confidence: float
+    top_root_cause: str
+    shap_attributions: Optional[List[ShapAttributionItem]] = None
+
+
+class BatchPredictionResponse(BaseModel):
+    """Schema for POST /predict/batch response."""
+    total_orders: int
+    high_risk_orders: int
+    average_delay_probability: float
+    orders: List[BatchOrderItem]
+
+
+class SimulateRouteItem(BaseModel):
+    """Schema for a single route/shipping mode simulation option."""
+    mode_key: str
+    name: str
+    delay_probability: float
+    risk_level: str
+    est_transit_days: float
+    est_freight_cost_usd: float
+    co2_emissions_kg: float
+    tagline: str
+    recommended: bool
 
 
 # -----------------------------
@@ -243,5 +288,112 @@ class CopilotContextResponse(BaseModel):
     """Schema for GET /copilot/context."""
     dashboard: Dict[str, Any]
     analytics: Dict[str, Any]
+
+
+# -----------------------------
+# Workforce Intelligence Schemas (v2.0)
+# -----------------------------
+class EmployeeItem(BaseModel):
+    employee_id: str
+    name: str
+    role: str
+    department: str
+    status: str
+    attendance_pct: float
+    productivity_score: float
+    kpi_score: float
+    delivery_performance_pct: float
+    error_rate_pct: float
+    location: str
+    salary_grade: str
+    is_underperforming: bool
+
+
+class VacancyItem(BaseModel):
+    vacancy_id: str
+    role_id: str
+    role_title: str
+    department: str
+    cause: str
+    previous_employee_name: str
+    required_skills: List[str]
+    preferred_skills: List[str]
+    min_experience_years: int
+    location: str
+    salary_grade: str
+    created_at: str
+
+
+class CandidateItem(BaseModel):
+    candidate_id: str
+    name: str
+    email: str
+    skills: List[str]
+    experience_years: int
+    education: str
+    certifications: List[str]
+    projects: List[str]
+    previous_companies: List[str]
+    languages: List[str]
+    current_location: str
+
+
+class CandidateRankItem(BaseModel):
+    rank_position: int
+    candidate: CandidateItem
+    vacancy_id: str
+    role_title: str
+    overall_compatibility_score: float
+    match_tier: str
+    skill_match_pct: float
+    experience_match_pct: float
+    education_match_pct: float
+    certification_match_pct: float
+    project_match_pct: float
+    matched_skills: List[str]
+    missing_skills: List[str]
+    ai_explanation: str
+
+
+class DepartmentVacancyItem(BaseModel):
+    department: str
+    count: int
+
+
+class WorkforceDashboardResponse(BaseModel):
+    total_employees: int
+    vacant_positions: int
+    candidates_screened: int
+    average_match_pct: float
+    replacement_time_days: float
+    underperforming_alerts: List[EmployeeItem]
+    department_vacancies: List[DepartmentVacancyItem]
+    top_vacancies: List[VacancyItem]
+
+
+class ResumeUploadResponse(BaseModel):
+    message: str
+    parsed_candidate: CandidateItem
+
+
+class CandidateAnalyzeRequest(BaseModel):
+    jd_text: str
+    role_title: str = "Logistics Operations Manager"
+
+
+class CandidateRankRequest(BaseModel):
+    vacancy_id: str = "VAC-201"
+
+
+class CopilotWorkforceRequest(BaseModel):
+    query: str
+
+
+class CopilotWorkforceResponse(BaseModel):
+    reply: str
+    top_candidate: str
+    match_score: float
+    active_vacancies_count: int
+
 
 

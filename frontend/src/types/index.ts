@@ -8,13 +8,53 @@ export interface ShipmentPayload {
   scheduled_shipping_days: number;
   order_is_weekend: number;
   discount_rate: number;
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined;
+}
+
+export interface ShapAttributionData {
+  feature: string;
+  impact: number;
+  direction: 'increases_risk' | 'reduces_risk';
 }
 
 export interface PredictionResult {
   delay_probability: number;
   risk_level: 'Low' | 'Medium' | 'High' | 'Critical';
   confidence: number;
+  shap_attributions?: ShapAttributionData[];
+}
+
+export interface BatchOrderItemData {
+  row_index: number;
+  order_id: string;
+  type: string;
+  market: string;
+  shipping_mode: string;
+  sales_usd: number;
+  delay_probability: number;
+  risk_level: 'Low' | 'Medium' | 'High' | 'Critical';
+  confidence: number;
+  top_root_cause: string;
+  shap_attributions?: ShapAttributionData[];
+}
+
+export interface BatchPredictionResponseData {
+  total_orders: number;
+  high_risk_orders: number;
+  average_delay_probability: number;
+  orders: BatchOrderItemData[];
+}
+
+export interface SimulateRouteItemData {
+  mode_key: string;
+  name: string;
+  delay_probability: number;
+  risk_level: 'Low' | 'Medium' | 'High' | 'Critical';
+  est_transit_days: number;
+  est_freight_cost_usd: number;
+  co2_emissions_kg: number;
+  tagline: string;
+  recommended: boolean;
 }
 
 export interface ActionRecommendation {
@@ -180,7 +220,7 @@ export interface CopilotChatMessagePayload {
 export interface CopilotChatResponseData {
   answer: string;
   card_type?: CopilotCardType;
-  card_data?: any;
+  card_data?: unknown;
   confidence: number;
   sources: string[];
   timestamp: string;
@@ -192,14 +232,12 @@ export interface CopilotChatMessage {
   text: string;
   timestamp: string;
   card_type?: CopilotCardType;
-  card_data?: any;
+  card_data?: unknown;
   confidence?: number;
   sources?: string[];
 }
 
 export type TabType =
-
-
   | 'dashboard'
   | 'operations'
   | 'shipment'
@@ -208,4 +246,98 @@ export type TabType =
   | 'copilot'
   | 'reports'
   | 'settings'
+  | 'workforce'
   | 'login';
+
+// -----------------------------
+// Workforce Intelligence Types (v2.0)
+// -----------------------------
+export interface EmployeeData {
+  employee_id: string;
+  name: string;
+  role: string;
+  department: string;
+  status: string;
+  attendance_pct: number;
+  productivity_score: number;
+  kpi_score: number;
+  delivery_performance_pct: number;
+  error_rate_pct: number;
+  location: string;
+  salary_grade: string;
+  is_underperforming: boolean;
+}
+
+export interface VacancyData {
+  vacancy_id: string;
+  role_id: string;
+  role_title: string;
+  department: string;
+  cause: string;
+  previous_employee_name: string;
+  required_skills: string[];
+  preferred_skills: string[];
+  min_experience_years: number;
+  location: string;
+  salary_grade: string;
+  created_at: string;
+}
+
+export interface CandidateProfileData {
+  candidate_id: string;
+  name: string;
+  email: string;
+  skills: string[];
+  experience_years: number;
+  education: string;
+  certifications: string[];
+  projects: string[];
+  previous_companies: string[];
+  languages: string[];
+  current_location: string;
+}
+
+export interface CandidateRankItemData {
+  rank_position: number;
+  candidate: CandidateProfileData;
+  vacancy_id: string;
+  role_title: string;
+  overall_compatibility_score: number;
+  match_tier: 'Excellent Match' | 'Good Match' | 'Average Match' | 'Not Recommended';
+  skill_match_pct: number;
+  experience_match_pct: number;
+  education_match_pct: number;
+  certification_match_pct: number;
+  project_match_pct: number;
+  matched_skills: string[];
+  missing_skills: string[];
+  ai_explanation: string;
+}
+
+export interface DepartmentVacancyData {
+  department: string;
+  count: number;
+}
+
+export interface WorkforceDashboardData {
+  total_employees: number;
+  vacant_positions: number;
+  candidates_screened: number;
+  average_match_pct: number;
+  replacement_time_days: number;
+  underperforming_alerts: EmployeeData[];
+  department_vacancies: DepartmentVacancyData[];
+  top_vacancies: VacancyData[];
+}
+
+export interface ResumeUploadResponseData {
+  message: string;
+  parsed_candidate: CandidateProfileData;
+}
+
+export interface CopilotWorkforceResponseData {
+  reply: string;
+  top_candidate: string;
+  match_score: number;
+  active_vacancies_count: number;
+}

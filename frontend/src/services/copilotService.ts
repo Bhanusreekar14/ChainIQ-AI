@@ -20,13 +20,13 @@ export async function getSuggestions(): Promise<string[]> {
   return response.data.suggestions;
 }
 
-export async function getContext(): Promise<any> {
+export async function getContext(): Promise<Record<string, unknown>> {
   const response = await api.get('/copilot/context');
   return response.data;
 }
 
 // Backward compatibility helper
-export async function askCopilot(query: string): Promise<any> {
+export async function askCopilot(query: string): Promise<Record<string, unknown>> {
   try {
     const res = await sendMessage(query);
     return {

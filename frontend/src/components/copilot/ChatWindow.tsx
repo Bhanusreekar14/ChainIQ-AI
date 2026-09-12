@@ -46,7 +46,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const renderRichCard = (type: CopilotCardType, data: any) => {
+  const renderRichCard = (type: CopilotCardType, data: unknown) => {
     if (!type || !data) return null;
 
     switch (type) {
@@ -69,16 +69,16 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {Array.isArray(data) &&
-                  data.map((item: any, idx: number) => (
+                  data.map((item: Record<string, unknown>, idx: number) => (
                     <tr key={idx} className="hover:bg-slate-50">
-                      <td className="py-1.5 font-bold text-slate-900">{item.order_id}</td>
-                      <td className="py-1.5 text-slate-600">{item.market}</td>
-                      <td className="py-1.5 text-slate-500">{item.shipping_mode}</td>
+                      <td className="py-1.5 font-bold text-slate-900">{String(item.order_id || '')}</td>
+                      <td className="py-1.5 text-slate-600">{String(item.market || '')}</td>
+                      <td className="py-1.5 text-slate-500">{String(item.shipping_mode || '')}</td>
                       <td className="py-1.5 text-right font-bold text-rose-600">
-                        {item.delay_probability}%
+                        {String(item.delay_probability || 0)}%
                       </td>
                       <td className="py-1.5 text-right font-mono text-slate-800">
-                        {formatCurrency(item.sales_usd)}
+                        {formatCurrency(Number(item.sales_usd || 0))}
                       </td>
                     </tr>
                   ))}
@@ -96,16 +96,16 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
             <div className="space-y-2 pt-1">
               {Array.isArray(data) &&
-                data.map((m: any, idx: number) => (
+                data.map((m: Record<string, unknown>, idx: number) => (
                   <div key={idx} className="space-y-1">
                     <div className="flex justify-between text-[11px]">
-                      <span className="font-semibold text-slate-800">{m.market}</span>
-                      <span className="font-bold text-blue-600">{m.delay_probability}%</span>
+                      <span className="font-semibold text-slate-800">{String(m.market || '')}</span>
+                      <span className="font-bold text-blue-600">{String(m.delay_probability || 0)}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-blue-600 rounded-full"
-                        style={{ width: `${m.delay_probability}%` }}
+                        style={{ width: `${Number(m.delay_probability || 0)}%` }}
                       />
                     </div>
                   </div>
@@ -114,37 +114,40 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
         );
 
-      case 'kpi_summary':
+      case 'kpi_summary': {
+        const kpi = data as Record<string, unknown>;
         return (
           <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
             <div className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-0.5 shadow-2xs">
               <span className="text-[10px] text-slate-500 font-semibold">Total Orders</span>
               <p className="font-bold text-slate-900 text-sm">
-                {data.total_shipments ? data.total_shipments.toLocaleString() : '180,519'}
+                {kpi.total_shipments ? Number(kpi.total_shipments).toLocaleString() : '180,519'}
               </p>
             </div>
             <div className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-0.5 shadow-2xs">
               <span className="text-[10px] text-slate-500 font-semibold">High Risk Count</span>
               <p className="font-bold text-rose-600 text-sm">
-                {data.high_risk_shipments ? data.high_risk_shipments.toLocaleString() : '256'}
+                {kpi.high_risk_shipments ? Number(kpi.high_risk_shipments).toLocaleString() : '256'}
               </p>
             </div>
             <div className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-0.5 shadow-2xs">
               <span className="text-[10px] text-slate-500 font-semibold">Avg Delay Prob</span>
               <p className="font-bold text-blue-600 text-sm">
-                {data.average_delay_probability}%
+                {String(kpi.average_delay_probability || 0)}%
               </p>
             </div>
             <div className="p-2.5 rounded-lg bg-white border border-slate-200 space-y-0.5 shadow-2xs">
               <span className="text-[10px] text-slate-500 font-semibold">Net Cost Savings</span>
               <p className="font-bold text-emerald-600 text-sm">
-                {formatCurrency(data.estimated_cost_savings || 412850)}
+                {formatCurrency(Number(kpi.estimated_cost_savings || 412850))}
               </p>
             </div>
           </div>
         );
+      }
 
-      case 'risk_distribution':
+      case 'risk_distribution': {
+        const rd = data as Record<string, unknown>;
         return (
           <div className="mt-3 p-3 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2 text-slate-900">
             <div className="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 uppercase tracking-wider">
@@ -153,53 +156,56 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
             <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
               <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-100 flex justify-between items-center">
-                <span className="text-slate-700 font-medium">Low Risk ({data.low_pct}%)</span>
-                <span className="font-bold text-emerald-700">{data.low_count?.toLocaleString()}</span>
+                <span className="text-slate-700 font-medium">Low Risk ({String(rd.low_pct || 0)}%)</span>
+                <span className="font-bold text-emerald-700">{Number(rd.low_count || 0).toLocaleString()}</span>
               </div>
               <div className="p-2 rounded-lg bg-amber-50 border border-amber-100 flex justify-between items-center">
-                <span className="text-slate-700 font-medium">Medium ({data.medium_pct}%)</span>
-                <span className="font-bold text-amber-700">{data.medium_count?.toLocaleString()}</span>
+                <span className="text-slate-700 font-medium">Medium ({String(rd.medium_pct || 0)}%)</span>
+                <span className="font-bold text-amber-700">{Number(rd.medium_count || 0).toLocaleString()}</span>
               </div>
               <div className="p-2 rounded-lg bg-orange-50 border border-orange-100 flex justify-between items-center">
-                <span className="text-slate-700 font-medium">High Risk ({data.high_pct}%)</span>
-                <span className="font-bold text-orange-700">{data.high_count?.toLocaleString()}</span>
+                <span className="text-slate-700 font-medium">High Risk ({String(rd.high_pct || 0)}%)</span>
+                <span className="font-bold text-orange-700">{Number(rd.high_count || 0).toLocaleString()}</span>
               </div>
               <div className="p-2 rounded-lg bg-rose-50 border border-rose-100 flex justify-between items-center">
-                <span className="text-slate-700 font-medium">Critical ({data.critical_pct}%)</span>
-                <span className="font-bold text-rose-700">{data.critical_count?.toLocaleString()}</span>
+                <span className="text-slate-700 font-medium">Critical ({String(rd.critical_pct || 0)}%)</span>
+                <span className="font-bold text-rose-700">{Number(rd.critical_count || 0).toLocaleString()}</span>
               </div>
             </div>
           </div>
         );
+      }
 
-      case 'executive_summary':
+      case 'executive_summary': {
+        const es = data as Record<string, unknown>;
         return (
           <div className="mt-3 p-3.5 rounded-xl bg-blue-50/70 border border-blue-100 text-xs space-y-2 text-slate-900">
             <div className="font-bold text-blue-900 flex items-center justify-between">
-              <span>{data.title || 'Executive Intelligence Brief'}</span>
+              <span>{String(es.title || 'Executive Intelligence Brief')}</span>
               <Badge variant="indigo" size="sm">Confidential</Badge>
             </div>
             <p className="text-slate-700 leading-relaxed text-[11px]">
-              Processed <strong className="text-slate-900">{data.total_shipments?.toLocaleString()}</strong> order vectors.
-              Achieved <strong className="text-emerald-700">{data.on_time_fulfillment_pct}%</strong> on-time fulfillment rate, generating{' '}
-              <strong className="text-emerald-700">{formatCurrency(data.total_savings_usd || 412850)}</strong> in financial SLA savings.
+              Processed <strong className="text-slate-900">{Number(es.total_shipments || 0).toLocaleString()}</strong> order vectors.
+              Achieved <strong className="text-emerald-700">{String(es.on_time_fulfillment_pct || 0)}%</strong> on-time fulfillment rate, generating{' '}
+              <strong className="text-emerald-700">{formatCurrency(Number(es.total_savings_usd || 412850))}</strong> in financial SLA savings.
             </p>
           </div>
         );
+      }
 
       case 'action_recommendations':
         return (
           <div className="mt-3 space-y-2 text-xs">
             {Array.isArray(data) &&
-              data.map((act: any, idx: number) => (
+              data.map((act: Record<string, unknown>, idx: number) => (
                 <div
                   key={idx}
                   className="p-3 rounded-xl bg-white border border-slate-200 flex justify-between items-center gap-3 shadow-2xs"
                 >
                   <span className="font-semibold text-slate-800 text-[11px] flex-1">
-                    {act.action}
+                    {String(act.action || '')}
                   </span>
-                  <Badge variant="low" size="sm">{act.impact}</Badge>
+                  <Badge variant="low" size="sm">{String(act.impact || '')}</Badge>
                 </div>
               ))}
           </div>

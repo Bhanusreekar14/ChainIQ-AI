@@ -42,7 +42,7 @@ export async function downloadCSV(): Promise<void> {
 }
 
 // Backward compatibility helper
-export async function generateExecutiveReport(_params?: { period?: string }): Promise<any> {
+export async function generateExecutiveReport(): Promise<Record<string, unknown>> {
   try {
 
     const summary = await getSummary();

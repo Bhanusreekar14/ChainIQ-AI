@@ -55,7 +55,7 @@ export const RiskDistribution: React.FC<RiskDistributionProps> = ({ data, loadin
               ))}
             </Pie>
             <Tooltip
-              formatter={(val: any) => [`${Number(val).toLocaleString()} Orders`, 'Shipment Count']}
+              formatter={(val: unknown) => [`${Number(val).toLocaleString()} Orders`, 'Shipment Count']}
               contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '12px', fontSize: '12px' }}
             />
             <Legend wrapperStyle={{ fontSize: '11px', color: '#94A3B8' }} />

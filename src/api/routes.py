@@ -7,7 +7,7 @@ cost; every request after that is pure inference.
 """
 
 from typing import List, Optional
-from fastapi import APIRouter, Header, HTTPException, Response, status
+from fastapi import APIRouter, File, Header, HTTPException, Response, UploadFile, status
 
 from src.agents.recommendation_engine import generate_recommendation
 from src.api.schemas import (
@@ -16,6 +16,8 @@ from src.api.schemas import (
     UserProfile,
     PredictionRequest,
     PredictionResponse,
+    BatchPredictionResponse,
+    SimulateRouteItem,
     DashboardSummaryResponse,
     RecentShipment,
     LiveAlert,
@@ -32,11 +34,30 @@ from src.api.schemas import (
     CopilotChatResponse,
     CopilotSuggestionsResponse,
     CopilotContextResponse,
+    WorkforceDashboardResponse,
+    VacancyItem,
+    CandidateRankItem,
+    ResumeUploadResponse,
+    CandidateAnalyzeRequest,
+    CandidateRankRequest,
+    CopilotWorkforceRequest,
+    CopilotWorkforceResponse,
 )
 from src.core.logging import logger
 from src.feature_builder import build_features
 from src.models.predict_delay import load_model, predict_delay
 from src.services.auth_service import authenticate_user, create_jwt_token, verify_token
+from src.services.batch_service import process_batch_csv
+from src.services.simulation_service import simulate_routes
+from src.services.resume_parser import parse_resume_text
+from src.services.jd_parser import parse_job_description
+from src.services.workforce_service import (
+    get_workforce_dashboard_summary,
+    MOCK_VACANCIES,
+    get_ranked_candidates_for_vacancy,
+    export_candidate_evaluation_pdf,
+    process_workforce_copilot_query,
+)
 from src.services.dashboard_service import (
     get_dashboard_summary,
     get_recent_shipments,
@@ -151,7 +172,7 @@ def refresh_token(authorization: Optional[str] = Header(None)) -> TokenResponse:
 def predict(request: PredictionRequest) -> PredictionResponse:
     """
     Takes a clean order payload, builds the 42-feature vector via
-    feature_builder, and returns the CatBoost delay probability + risk level.
+    feature_builder, and returns the CatBoost delay probability + risk level + SHAP attributions.
     """
     logger.info("Processing /predict request")
     _get_model()
@@ -168,7 +189,33 @@ def predict(request: PredictionRequest) -> PredictionResponse:
         delay_probability=result["delay_probability"],
         risk_level=result["risk_level"],
         confidence=result["confidence"],
+        shap_attributions=result.get("shap_attributions"),
     )
+
+
+@router.post(
+    "/predict/batch",
+    response_model=BatchPredictionResponse,
+    summary="Bulk predict delay probability for uploaded CSV shipment orders",
+)
+async def predict_batch(file: UploadFile = File(...)) -> BatchPredictionResponse:
+    """Ingest CSV file, run bulk CatBoost predictions, and return aggregated metrics."""
+    logger.info(f"Processing /predict/batch file: {file.filename}")
+    content = await file.read()
+    batch_result = process_batch_csv(content)
+    return BatchPredictionResponse(**batch_result)
+
+
+@router.post(
+    "/simulate/routes",
+    response_model=List[SimulateRouteItem],
+    summary="Multi-route & carrier what-if simulator (Cost, Transit, SLA Risk, CO2)",
+)
+def simulate_order_routes(request: PredictionRequest) -> List[SimulateRouteItem]:
+    """Run comparative simulation across 4 shipping modes for a single order payload."""
+    logger.info("Processing /simulate/routes request")
+    results = simulate_routes(request.model_dump())
+    return [SimulateRouteItem(**item) for item in results]
 
 
 @router.post(
@@ -415,5 +462,118 @@ def copilot_context() -> CopilotContextResponse:
     dash = get_dashboard_context()
     analytics = get_analytics_context()
     return CopilotContextResponse(dashboard=dash, analytics=analytics)
+
+
+# -----------------------------
+# Workforce Intelligence & Talent Replacement Routes (v2.0)
+# -----------------------------
+@router.get(
+    "/workforce/dashboard",
+    response_model=WorkforceDashboardResponse,
+    summary="Get executive workforce KPIs, active vacancies, and performance threshold alerts",
+)
+def get_workforce_dashboard() -> WorkforceDashboardResponse:
+    """Returns total employees, vacancies, screened candidates, avg match %, and alerts."""
+    logger.info("Processing /workforce/dashboard request")
+    summary = get_workforce_dashboard_summary()
+    return WorkforceDashboardResponse(**summary)
+
+
+@router.get(
+    "/vacancies",
+    response_model=List[VacancyItem],
+    summary="List all active job role vacancies created by resignation, retirement, or termination",
+)
+def get_vacancies() -> List[VacancyItem]:
+    """Returns list of open positions requiring AI candidate matching."""
+    logger.info("Processing /vacancies request")
+    return [VacancyItem(**v.to_dict()) for v in MOCK_VACANCIES]
+
+
+@router.post(
+    "/resume/upload",
+    response_model=ResumeUploadResponse,
+    summary="Upload PDF, DOCX, or TXT candidate resume for NLP skill extraction",
+)
+async def upload_resume(file: UploadFile = File(...)) -> ResumeUploadResponse:
+    """Ingests resume file and extracts structured skills, experience, and certifications."""
+    logger.info(f"Processing /resume/upload file: {file.filename}")
+    content_bytes = await file.read()
+    raw_text = content_bytes.decode("utf-8", errors="ignore")
+    parsed = parse_resume_text(raw_text, filename=file.filename or "resume.pdf")
+    return ResumeUploadResponse(
+        message="Resume successfully parsed and indexed into candidate database",
+        parsed_candidate=parsed,
+    )
+
+
+@router.post(
+    "/candidate/analyze",
+    summary="Parse Job Description text and create AI Job Profile",
+)
+def analyze_job_profile(request: CandidateAnalyzeRequest):
+    """Converts raw Job Description text into structured AI skill profile."""
+    logger.info(f"Processing /candidate/analyze for role: {request.role_title}")
+    profile = parse_job_description(request.jd_text, request.role_title)
+    return profile
+
+
+@router.post(
+    "/candidate/rank",
+    response_model=List[CandidateRankItem],
+    summary="Execute multi-dimensional AI semantic matching and candidate ranking",
+)
+def rank_candidates(request: CandidateRankRequest) -> List[CandidateRankItem]:
+    """Calculates Skill, Experience, Education, and Certification match scores + AI explanation."""
+    logger.info(f"Processing /candidate/rank for vacancy: {request.vacancy_id}")
+    ranked = get_ranked_candidates_for_vacancy(request.vacancy_id)
+    return [CandidateRankItem(**item) for item in ranked]
+
+
+@router.get(
+    "/candidate/top",
+    response_model=List[CandidateRankItem],
+    summary="Get top ranked candidates across all open supply chain vacancies",
+)
+def get_top_candidates(vacancy_id: Optional[str] = "VAC-201") -> List[CandidateRankItem]:
+    """Returns candidates matching or exceeding 75% compatibility threshold."""
+    logger.info(f"Processing /candidate/top request for vacancy_id={vacancy_id}")
+    ranked = get_ranked_candidates_for_vacancy(vacancy_id or "VAC-201")
+    return [CandidateRankItem(**item) for item in ranked]
+
+
+@router.get(
+    "/candidate/report",
+    summary="Generate downloadable Candidate Evaluation & Talent Replacement PDF Report",
+)
+def get_candidate_report():
+    """Returns binary PDF document evaluating top candidates and prescribed HR steps."""
+    logger.info("Processing /candidate/report PDF download")
+    pdf_bytes = export_candidate_evaluation_pdf()
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=ChainIQ_Talent_Evaluation_Report_{Date_Now_Str()}.pdf"
+        },
+    )
+
+
+def Date_Now_Str():
+    from datetime import datetime
+    return datetime.now().strftime("%Y%m%d_%H%M%S")
+
+
+@router.post(
+    "/copilot/workforce",
+    response_model=CopilotWorkforceResponse,
+    summary="AI Copilot natural language queries for Workforce Intelligence",
+)
+def copilot_workforce(request: CopilotWorkforceRequest) -> CopilotWorkforceResponse:
+    """Answers HR workforce questions like 'Who is the best replacement for Warehouse Manager?'."""
+    logger.info(f"Processing /copilot/workforce query: {request.query}")
+    res = process_workforce_copilot_query(request.query)
+    return CopilotWorkforceResponse(**res)
+
 
 

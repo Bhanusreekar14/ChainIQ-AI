@@ -13,6 +13,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'analytics', label: 'Analytics' },
   { id: 'scenario', label: 'Simulator' },
   { id: 'copilot', label: 'AI Copilot', badge: 'AI' },
+  { id: 'workforce', label: 'Workforce Intelligence', badge: 'v2.0' },
   { id: 'reports', label: 'Executive Reports' },
   { id: 'settings', label: 'Settings' },
 ];

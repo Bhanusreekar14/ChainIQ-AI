@@ -33,7 +33,7 @@ export const Reports: React.FC = () => {
       const [sumData, monthData] = await Promise.all([getSummary(), getMonthly()]);
       setSummary(sumData);
       setMonthlyData(monthData);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load reports data:', err);
       setError('Unable to connect to FastAPI backend. Rendering fallback report data.');
       // Fallback state
@@ -55,13 +55,46 @@ export const Reports: React.FC = () => {
         { month: 'May 2026', total_shipments: 31100, delayed_shipments: 4665, on_time_pct: 85.0, revenue_usd: 2150000.0 },
         { month: 'Jun 2026', total_shipments: 31219, delayed_shipments: 4433, on_time_pct: 85.8, revenue_usd: 2250000.0 },
       ]);
-    } finally {
-      // Data loaded
     }
   };
 
   useEffect(() => {
-    fetchReportsData();
+    let isMounted = true;
+    Promise.all([getSummary(), getMonthly()])
+      .then(([sumData, monthData]) => {
+        if (isMounted) {
+          setSummary(sumData);
+          setMonthlyData(monthData);
+        }
+      })
+      .catch((err: unknown) => {
+        if (isMounted) {
+          console.error('Failed to load reports data:', err);
+          setError('Unable to connect to FastAPI backend. Rendering fallback report data.');
+          setSummary({
+            total_shipments: 180519,
+            high_risk_shipments: 256,
+            on_time_delivery_pct: 96.2,
+            delay_trend_avg: 14.2,
+            revenue_summary_usd: 12450000.0,
+            period: 'Q2 2026',
+            confidence_score: 94.0,
+            generated_at: new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
+          });
+          setMonthlyData([
+            { month: 'Jan 2026', total_shipments: 28500, delayed_shipments: 6384, on_time_pct: 77.6, revenue_usd: 1920000.0 },
+            { month: 'Feb 2026', total_shipments: 29100, delayed_shipments: 5849, on_time_pct: 79.9, revenue_usd: 1980000.0 },
+            { month: 'Mar 2026', total_shipments: 30200, delayed_shipments: 5587, on_time_pct: 81.5, revenue_usd: 2050000.0 },
+            { month: 'Apr 2026', total_shipments: 30400, delayed_shipments: 4924, on_time_pct: 83.8, revenue_usd: 2100000.0 },
+            { month: 'May 2026', total_shipments: 31100, delayed_shipments: 4665, on_time_pct: 85.0, revenue_usd: 2150000.0 },
+            { month: 'Jun 2026', total_shipments: 31219, delayed_shipments: 4433, on_time_pct: 85.8, revenue_usd: 2250000.0 },
+          ]);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleDownloadPDF = async () => {

@@ -18,6 +18,8 @@ export const ReportModal: React.FC<ReportModalProps> = ({
   result,
   payload,
 }) => {
+  const [reportId] = React.useState(() => Math.floor(100000 + Math.random() * 900000).toString());
+
   if (!isOpen) return null;
 
   const handlePrint = () => {
@@ -104,7 +106,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
 
         {/* Footer */}
         <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
-          <span>Report ID: CHNQ-RPT-{Date.now().toString().slice(-6)}</span>
+          <span>Report ID: CHNQ-RPT-{reportId}</span>
           <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Authenticated Intelligence Output</span>
         </div>
       </div>

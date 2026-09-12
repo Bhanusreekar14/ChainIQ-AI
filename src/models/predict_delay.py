@@ -96,11 +96,29 @@ def predict_delay(order_data: dict) -> dict:
     # Part 4: Classify risk
     risk_level = classify_risk(probability)
 
-    # Part 5: Return result
+    # Part 5: Compute SHAP feature attributions
+    shap_attributions = []
+    try:
+        raw_shap = model.get_feature_importance(data=input_df, type="ShapValues")[0][:-1]
+        for feat, val in zip(safe_features, raw_shap):
+            impact_val = round(float(val), 4)
+            if abs(impact_val) >= 0.001:
+                shap_attributions.append({
+                    "feature": feat,
+                    "impact": impact_val,
+                    "direction": "increases_risk" if impact_val > 0 else "reduces_risk",
+                })
+        shap_attributions.sort(key=lambda x: abs(x["impact"]), reverse=True)
+        shap_attributions = shap_attributions[:6]
+    except Exception as e:
+        logger.warning(f"Failed to calculate SHAP feature importance: {e}")
+
+    # Part 6: Return result
     return {
         "delay_probability": round(float(probability), 4),
         "risk_level": risk_level,
         "confidence": round(float(probability) * 100, 2),
+        "shap_attributions": shap_attributions,
     }
 
 

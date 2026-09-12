@@ -14,6 +14,7 @@ import { Scenario } from './pages/Scenario';
 import { Copilot } from './pages/Copilot';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
+import { Workforce } from './pages/Workforce';
 import { Login } from './pages/Login';
 import { LandingPage } from './pages/LandingPage';
 import { IntroPage } from './pages/IntroPage';
@@ -32,6 +33,7 @@ const ProtectedLayoutWrapper: React.FC = () => {
     if (path === 'analytics') return 'analytics';
     if (path === 'simulator') return 'scenario';
     if (path === 'copilot') return 'copilot';
+    if (path === 'workforce') return 'workforce';
     if (path === 'reports') return 'reports';
     if (path === 'settings') return 'settings';
     return 'dashboard';
@@ -57,6 +59,7 @@ const ProtectedLayoutWrapper: React.FC = () => {
           <Route path="analytics" element={<Analytics />} />
           <Route path="simulator" element={<Scenario />} />
           <Route path="copilot" element={<Copilot />} />
+          <Route path="workforce" element={<Workforce />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound setActiveTab={handleSetActiveTab} />} />

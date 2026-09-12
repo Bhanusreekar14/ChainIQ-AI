@@ -171,7 +171,7 @@ def generate_recommendation(order_data: dict) -> dict:
 
 
     # Step 2: Analyze root causes
-    causes = analyze_root_causes(order_data)
+    causes = analyze_root_causes(features)
 
     # Step 3: Generate recommendations
     recommendations = generate_actions(causes, prediction)

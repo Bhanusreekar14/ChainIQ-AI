@@ -74,6 +74,7 @@ def test_predict_delay_returns_valid_prediction(sample_order_data):
     assert "delay_probability" in result
     assert "risk_level" in result
     assert "confidence" in result
+    assert "shap_attributions" in result
 
     prob = result["delay_probability"]
     assert isinstance(prob, float)
@@ -81,3 +82,4 @@ def test_predict_delay_returns_valid_prediction(sample_order_data):
 
     assert result["risk_level"] in ["Low", "Medium", "High", "Critical"]
     assert result["confidence"] == round(prob * 100, 2)
+    assert isinstance(result["shap_attributions"], list)

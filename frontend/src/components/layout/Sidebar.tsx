@@ -11,6 +11,7 @@ import {
   Settings as SettingsIcon,
   LogOut,
   ChevronRight,
+  UserCheck,
   ShieldCheck,
 } from 'lucide-react';
 import type { TabType } from '../../types';
@@ -40,6 +41,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         return <SlidersHorizontal className="w-4 h-4" />;
       case 'copilot':
         return <Bot className="w-4 h-4" />;
+      case 'workforce':
+        return <UserCheck className="w-4 h-4" />;
       case 'reports':
         return <FileText className="w-4 h-4" />;
       case 'settings':

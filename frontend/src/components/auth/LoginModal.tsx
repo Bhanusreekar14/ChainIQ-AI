@@ -32,8 +32,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       await loginWithEmail(email, password);
       onClose();
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Invalid email or password. Access denied.');
+    } catch (err: unknown) {
+      const errorMsg = (err as { message?: string })?.message || 'Invalid email or password. Access denied.';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -46,8 +47,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
       await loginWithGoogle();
       onClose();
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Google Sign-In failed or popup was closed.');
+    } catch (err: unknown) {
+      const errorMsg = (err as { message?: string })?.message || 'Google Sign-In failed or popup was closed.';
+      setError(errorMsg);
     } finally {
       setGoogleLoading(false);
     }

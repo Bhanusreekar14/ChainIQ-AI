@@ -13,3 +13,6 @@ catboost
 sqlalchemy
 psycopg2-binary
 firebase-admin
+reportlab
+shap
+python-multipart
