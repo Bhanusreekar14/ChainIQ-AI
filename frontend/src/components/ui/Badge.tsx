@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '../../lib/utils';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'low' | 'medium' | 'high' | 'critical' | 'urgent' | 'ai' | 'indigo' | 'slate';
+  variant?: 'low' | 'medium' | 'high' | 'critical' | 'urgent' | 'ai' | 'indigo' | 'slate' | 'success' | 'danger' | 'amber';
   size?: 'sm' | 'md';
 }
 
@@ -18,11 +18,14 @@ export const Badge: React.FC<BadgeProps> = ({
     md: 'px-2.5 py-1 text-xs',
   };
 
-  const variantStyles = {
+  const variantStyles: Record<NonNullable<BadgeProps['variant']>, string> = {
     low: 'bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-semibold',
+    success: 'bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-semibold',
     medium: 'bg-indigo-50 text-indigo-700 border border-indigo-200/60 font-semibold',
+    amber: 'bg-indigo-50 text-indigo-700 border border-indigo-200/60 font-semibold',
     high: 'bg-orange-50 text-orange-700 border border-orange-200/60 font-semibold',
     critical: 'bg-rose-50 text-rose-700 border border-rose-200/60 font-semibold',
+    danger: 'bg-rose-50 text-rose-700 border border-rose-200/60 font-semibold',
     urgent: 'bg-rose-600 text-white font-semibold uppercase shadow-xs',
     ai: 'bg-blue-50 text-blue-700 border border-blue-200/60 font-semibold',
     indigo: 'bg-blue-50 text-blue-700 border border-blue-200/60 font-semibold',
